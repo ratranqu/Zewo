@@ -923,19 +923,16 @@ extension _JSONEncoder {
         }
         
         // The value should request a container from the _JSONEncoder.
-        let topContainer = self.storage.containers.last
+        let count = storage.containers.count
         try value.encode(to: self)
         
+        // The top container should be a new container.
+        guard storage.containers.count != count else {
+            // If the value didn't request a container at all, encode the default container instead.
+            return [:]
+        }
         
-        // TODO: Figure this out!
-//
-//        // The top container should be a new container.
-//        guard self.storage.containers.last! !== topContainer else {
-//            // If the value didn't request a container at all, encode the default container instead.
-//            return [:]
-//        }
-        
-        return self.storage.popContainer()
+        return storage.popContainer()
     }
 }
 

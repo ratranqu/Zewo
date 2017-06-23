@@ -92,7 +92,7 @@ public class XMLParser : NSObject, XMLParserDelegate {
         _ stream: Readable,
         bufferSize: Int = 4096,
         deadline: Deadline
-    ) throws -> XML {
+    ) throws -> XMLElement {
         let xmlParser = XMLParser()
         
         let parseStream = ParserStream(stream: stream, deadline: deadline)
@@ -117,34 +117,34 @@ public class XMLParser : NSObject, XMLParserDelegate {
         qualifiedName: String?,
         attributes: [String: String]
     ) {
-        let element = XML(name: name, attributes: attributes)
+        let element = XMLElement(name: name, attributes: attributes)
         
         if !stack.isEmpty {
-            stack.top().addElement(element)
+            stack.addElement(element)
         }
         
         stack.push(element)
     }
     
     public func parser(_ parser: Foundation.XMLParser, foundCharacters content: String) {
-        stack.top().addContent(content)
+        stack.addContent(content)
     }
     
     public func parser(
         _ parser: Foundation.XMLParser,
         didEndElement elementName: String,
         namespaceURI: String?,
-        qualifiedName qName: String?
+        qualifiedName: String?
     ) {
         stack.drop()
     }
 }
 
 struct Stack {
-    var root: XML?
-    private var items: [XML] = []
+    var root: XMLElement?
+    private var items: [XMLElement] = []
     
-    mutating func push(_ item: XML) {
+    mutating func push(_ item: XMLElement) {
         if root == nil {
             root = item
         }
@@ -160,8 +160,16 @@ struct Stack {
         items.removeAll(keepingCapacity: false)
     }
     
-    func top() -> XML {
-        return items[items.count - 1]
+    mutating func addElement(_ element: XMLElement) {
+        var item = items[items.count - 1]
+        item.addElement(element)
+        items[items.count - 1] = item
+    }
+    
+    mutating func addContent(_ content: String) {
+        var item = items[items.count - 1]
+        item.addContent(content)
+        items[items.count - 1] = item
     }
     
     var isEmpty: Bool {

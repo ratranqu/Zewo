@@ -1,22 +1,81 @@
+/// An error that occurs during the mapping of a value.
+public enum MappingError : Error {
+    /// The context in which the error occurred.
+    public struct Context {
+        
+        /// The path of `CodingKey`s taken to get to the point of the failing encode call.
+        public let mappingPath: [MappingKey?]
+        
+        /// A description of what went wrong, for debugging purposes.
+        public let debugDescription: String
+        
+        /// Initializes `self` with the given path of `CodingKey`s and a description of what went wrong.
+        ///
+        /// - parameter codingPath: The path of `CodingKey`s taken to get to the point of the failing encode call.
+        /// - parameter debugDescription: A description of what went wrong, for debugging purposes.
+        public init(mappingPath: [MappingKey?] = [], debugDescription: String = "") {
+            self.mappingPath = mappingPath
+            self.debugDescription = debugDescription
+        }
+    }
+    
+    /// `.invalidValue` indicates that an `Encoder` or its containers could not encode the given value.
+    ///
+    /// Contains the attempted value, along with context for debugging.
+    case invalidValue(Any, MappingError.Context)
+    
+    /// `.typeMismatch` indicates that a value of the given type could not be decoded because it did not match the type of what was found in the encoded payload.
+    ///
+    /// Contains the attempted type, along with context for debugging.
+    case typeMismatch(Any.Type, MappingError.Context)
+    
+    /// `.valueNotFound` indicates that a non-optional value of the given type was expected, but a null value was found.
+    ///
+    /// Contains the attempted type, along with context for debugging.
+    case valueNotFound(Any.Type, MappingError.Context)
+    
+    /// `.keyNotFound` indicates that a `KeyedDecodingContainer` was asked for an entry for the given key, but did not contain one.
+    ///
+    /// Contains the attempted key, along with context for debugging.
+    case keyNotFound(MappingKey, MappingError.Context)
+    
+    /// `.dataCorrupted` indicates that the data is corrupted or otherwise invalid.
+    ///
+    /// Contains context for debugging.
+    case dataCorrupted(MappingError.Context)
+}
+
 public protocol Map {
+    static func keyedContainer() throws -> Self
+    static func unkeyedContainer() throws -> Self
+    
+    init(array: [Self]) throws
+    
+    init(null: Void) throws
+    init(bool: Bool) throws
+    init(int: Int) throws
+    init(int8: Int8) throws
+    init(int16: Int16) throws
+    init(int32: Int32) throws
+    init(int64: Int64) throws
+    init(uint: UInt) throws
+    init(uint8: UInt8) throws
+    init(uint16: UInt16) throws
+    init(uint32: UInt32) throws
+    init(uint64: UInt64) throws
+    init(float: Float) throws
+    init(double: Double) throws
+    init(string: String) throws
+    
+    mutating func set(_ value: Self, forKeys keys: [MappingKey]) throws
+    mutating func append(_ value: Self) throws
+    
+    var keys: [String] { get }
+    
+    var isNull: Bool { get }
+    
     func value(forKeys keys: [MappingKey]) throws -> Self?
-    
-//    static func box(_ value: Bool?) throws -> Self
-//    static func box(_ value: Int?) throws -> Self
-//    static func box(_ value: Int8?) throws -> Self
-//    static func box(_ value: Int16?) throws -> Self
-//    static func box(_ value: Int32?) throws -> Self
-//    static func box(_ value: Int64?) throws -> Self
-//    static func box(_ value: UInt?) throws -> Self
-//    static func box(_ value: UInt8?) throws -> Self
-//    static func box(_ value: UInt16?) throws -> Self
-//    static func box(_ value: UInt32?) throws -> Self
-//    static func box(_ value: UInt64?) throws -> Self
-//    static func box(_ value: Float?) throws -> Self
-//    static func box(_ value: Double?) throws -> Self
-//    static func box(_ value: String?) throws -> Self
-    
-    func arrayValue(forKeys keys: [MappingKey]) throws -> [Map]?
+    func arrayValue(forKeys keys: [MappingKey]) throws -> [Self]?
     
     func boolValue(forKeys keys: [MappingKey]) throws -> Bool?
     func intValue(forKeys keys: [MappingKey]) throws -> Int?
@@ -32,17 +91,18 @@ public protocol Map {
     func floatValue(forKeys keys: [MappingKey]) throws -> Float?
     func doubleValue(forKeys keys: [MappingKey]) throws -> Double?
     func stringValue(forKeys keys: [MappingKey]) throws -> String?
-    
-    static func keyedContainer() throws -> Self
-    static func unkeyedContainer() throws -> Self
 }
 
 extension Map {
+    mutating func set(_ value: Self, forKeys keys: MappingKey...) throws {
+        return try set(value, forKeys: keys)
+    }
+    
     public func value(forKeys keys: MappingKey...) throws -> Self? {
         return try value(forKeys: keys)
     }
     
-    public func arrayValue(forKeys keys: MappingKey...) throws -> [Map]? {
+    public func arrayValue(forKeys keys: MappingKey...) throws -> [Self]? {
         return try arrayValue(forKeys: keys)
     }
     

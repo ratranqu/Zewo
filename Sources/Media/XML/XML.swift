@@ -1,10 +1,10 @@
 public enum XMLError : Error {
-    case noContent(type: XMLInitializable.Type)
-    case cannotInitialize(type: XMLInitializable.Type, xml: XML)
-    case valueNotArray(indexPath: [IndexPathComponent], xml: XML)
-    case outOfBounds(indexPath: [IndexPathComponent], xml: XML)
-    case valueNotDictionary(indexPath: [IndexPathComponent], xml: XML)
-    case valueNotFound(indexPath: [IndexPathComponent], xml: XML)
+    case noContent(type: Any.Type)
+    case cannotInitialize(type: Any.Type, xml: XMLElement)
+    case valueNotArray(indexPath: [IndexPathComponent], xml: XMLElement)
+    case outOfBounds(indexPath: [IndexPathComponent], xml: XMLElement)
+    case valueNotDictionary(indexPath: [IndexPathComponent], xml: XMLElement)
+    case valueNotFound(indexPath: [IndexPathComponent], xml: XMLElement)
 }
 
 extension XMLError : CustomStringConvertible {
@@ -26,49 +26,39 @@ extension XMLError : CustomStringConvertible {
     }
 }
 
-extension Array where Element == XML {
-    public func withAttribute(_ name: String, equalTo value: String) -> XML? {
-        for element in self where (element.getAttribute(name) as String?) == value {
-            return element
-        }
-        
-        return nil
-    }
+public protocol XMLNode {
+    var xmlNode: XMLNodeValue { get }
 }
 
-public protocol XMLNodeRepresentable {
-    var xmlNode: XML.Node { get }
-}
-
-extension XML : XMLNodeRepresentable {
-    public var xmlNode: XML.Node {
+extension XMLElement : XMLNode {
+    public var xmlNode: XMLNodeValue {
         return .element(self)
     }
 }
 
-extension String : XMLNodeRepresentable {
-    public var xmlNode: XML.Node {
+extension String : XMLNode {
+    public var xmlNode: XMLNodeValue {
         return .content(self)
     }
 }
 
-public final class XML {
-    public enum Node {
-        case element(XML)
-        case content(String)
-    }
-    
+public enum XMLNodeValue {
+    case element(XMLElement)
+    case content(String)
+}
+
+public struct XMLElement {
     public let name: String
     public let attributes: [String: String]
-    public internal(set) var children: [Node]
+    public internal(set) var children: [XMLNodeValue]
     
-    init(name: String, attributes: [String: String] = [:], children: [XMLNodeRepresentable] = []) {
+    public init(name: String, attributes: [String: String] = [:], children: [XMLNode] = []) {
         self.name = name
         self.attributes = attributes
         self.children = children.map({ $0.xmlNode })
     }
     
-    public func getAttribute(_ name: String) throws -> String {
+    public func getAttribute(named name: String) throws -> String {
         guard let attribute = attributes[name] else {
             throw XMLError.valueNotFound(indexPath: [.key(name)], xml: self)
         }
@@ -79,84 +69,17 @@ public final class XML {
     public var contents: String {
         var string = ""
         
-        var contents: [String] = []
-        
         for child in children {
             if case let .content(content) = child {
-                contents.append(content.description)
+                string += content.description
             }
-        }
-        
-        for content in contents {
-            string += content
         }
         
         return string
     }
     
-    public func get(_ indexPath: IndexPathComponent...) throws -> XML {
-        return try _get(indexPath as [IndexPathComponent])
-    }
-    
-    public func get(_ indexPath: IndexPathComponent...) throws -> [XML] {
-        return try _get(indexPath as [IndexPathComponent])
-    }
-    
-    internal func _get(_ indexPath: [IndexPathComponent]) throws -> XML {
-        let elements: [XML] = try _get(indexPath)
-        
-        guard elements.count == 1, let element = elements.first else {
-            throw XMLError.valueNotFound(
-                indexPath: indexPath,
-                xml: self
-            )
-        }
-        
-        return element
-    }
-    
-    internal func _get(_ indexPath: [IndexPathComponent]) throws -> [XML] {
-        var value = [self]
-        var single = true
-        var visited: [IndexPathComponent] = []
-        
-        loop: for component in indexPath {
-            visited.append(component)
-            
-            switch component {
-            case let .index(index):
-                if single, value.count == 1, let element = value.first {
-                    guard element.elements.indices.contains(index) else {
-                        throw XMLError.outOfBounds(indexPath: visited, xml: self)
-                    }
-                    
-                    value = [element.elements[index]]
-                    single = true
-                    continue loop
-                }
-                
-                guard value.indices.contains(index) else {
-                    throw XMLError.outOfBounds(indexPath: visited, xml: self)
-                }
-                
-                value = [value[index]]
-                single = true
-            case let .key(key):
-                guard value.count == 1, let element = value.first else {
-                    // More than one result
-                    throw XMLError.valueNotFound(indexPath: visited, xml: self)
-                }
-            
-                value = element.getElements(named: key)
-                single = false
-            }
-        }
-        
-        return value
-    }
-    
-    func getElements(named name: String) -> [XML] {
-        var elements: [XML] = []
+    public func getElements(named name: String) -> [XMLElement] {
+        var elements: [XMLElement] = []
         
         for element in self.elements where element.name == name {
             elements.append(element)
@@ -165,8 +88,8 @@ public final class XML {
         return elements
     }
     
-    var elements: [XML] {
-        var elements: [XML] = []
+    public var elements: [XMLElement] {
+        var elements: [XMLElement] = []
         
         for child in children {
             if case let .element(element) = child {
@@ -177,16 +100,16 @@ public final class XML {
         return elements
     }
     
-    func addElement(_ element: XML) {
+    public mutating func addElement(_ element: XMLElement) {
         children.append(.element(element))
     }
     
-    func addContent(_ content: String) {
+    public mutating func addContent(_ content: String) {
         children.append(.content(content))
     }
 }
 
-extension XML : CustomStringConvertible {
+extension XMLElement : CustomStringConvertible {
     public var description: String {
         var attributes = ""
 
@@ -230,7 +153,7 @@ extension XML : CustomStringConvertible {
     }
 }
 
-extension XML.Node : CustomStringConvertible {
+extension XMLNodeValue : CustomStringConvertible {
     public var description: String {
         switch self {
         case let .element(element):

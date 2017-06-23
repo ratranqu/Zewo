@@ -222,13 +222,6 @@ extension Foo {
 // MARK: is<Type>
 
 extension Foo {
-    public var isNull: Bool {
-        if case .null = self {
-            return true
-        }
-        return false
-    }
-    
     public var isBool: Bool {
         if case .bool = self {
             return true
@@ -528,24 +521,20 @@ extension Foo {
 // MARK: Set
 
 extension Foo {
-    public mutating func set<T : MapRepresentable>(_ value: T, for indexPath: MappingKey...) throws {
-        try set(value, for: indexPath)
+    public mutating func set<T : MapRepresentable>(_ value: T, forKeys keys: [MappingKey]) throws {
+        try set(value, forKeys: keys, merging: true)
     }
     
-    public mutating func set<T : MapRepresentable>(_ value: T, for indexPath: [MappingKey]) throws {
-        try set(value, for: indexPath, merging: true)
-    }
-    
-    fileprivate mutating func set<T : MapRepresentable>(_ value: T, for indexPath: [MappingKey], merging: Bool) throws {
-        var indexPath = indexPath
+    fileprivate mutating func set<T : MapRepresentable>(_ value: T, forKeys keys: [MappingKey], merging: Bool) throws {
+        var keys = keys
         
-        guard let first = indexPath.first else {
+        guard let first = keys.first else {
             return self = value.map
         }
         
-        indexPath.removeFirst()
+        keys.removeFirst()
         
-        if indexPath.isEmpty {
+        if keys.isEmpty {
             if let index = first.indexValue {
                 if case .array(var array) = self {
                     if !array.indices.contains(index) {
@@ -592,8 +581,8 @@ extension Foo {
                 next = (try? self.get(first)) ?? .dictionary([:])
             }
             
-            try next.set(value, for: indexPath)
-            try self.set(next, for: [first])
+            try next.set(value, forKeys: keys)
+            try self.set(next, forKeys: [first])
         }
     }
 }
@@ -601,20 +590,20 @@ extension Foo {
 // MARK: Remove
 
 extension Foo {
-    public mutating func remove(_ indexPath: MappingKey...) throws {
-        try self.remove(indexPath)
+    public mutating func remove(_ keys: MappingKey...) throws {
+        try self.remove(keys)
     }
     
-    public mutating func remove(_ indexPath: [MappingKey]) throws {
-        var indexPath = indexPath
+    public mutating func remove(_ keys: [MappingKey]) throws {
+        var keys = keys
         
-        guard let first = indexPath.first else {
+        guard let first = keys.first else {
             return self = .null
         }
         
-        indexPath.removeFirst()
+        keys.removeFirst()
         
-        if indexPath.isEmpty {
+        if keys.isEmpty {
             guard case .dictionary(var dictionary) = self else {
                 throw MapError.incompatibleType
             }
@@ -625,8 +614,8 @@ extension Foo {
             guard var next = try? self.get(first) else {
                 throw MapError.valueNotFound
             }
-            try next.remove(indexPath)
-            try self.set(next, for: [first], merging: false)
+            try next.remove(keys)
+            try self.set(next, forKeys: [first], merging: false)
         }
     }
 }
@@ -634,24 +623,24 @@ extension Foo {
 // MARK: Subscripts
 
 extension Foo {
-    public subscript(indexPath: MappingKey...) -> Foo {
+    public subscript(keys: MappingKey...) -> Foo {
         get {
-            return self[indexPath]
+            return self[keys]
         }
         
         set(value) {
-            self[indexPath] = value
+            self[keys] = value
         }
     }
     
-    public subscript(indexPath: [MappingKey]) -> Foo {
+    public subscript(keys: [MappingKey]) -> Foo {
         get {
-            return (try? self.get(indexPath)) ?? nil
+            return (try? self.get(keys)) ?? nil
         }
         
         set(value) {
             do {
-                try self.set(value, for: indexPath)
+                try self.set(value, forKeys: keys)
             } catch {
                 fatalError(String(describing: error))
             }
@@ -735,6 +724,114 @@ extension Foo : ExpressibleByDictionaryLiteral {
 }
 
 extension Foo : Map {
+    public mutating func append(_ value: Foo) throws {
+        
+    }
+    
+    public init(array: [Foo]) throws {
+        self = .array(array)
+    }
+    
+    public init(null: Void) throws {
+        self = .null
+    }
+    
+    public init(bool: Bool) throws {
+        self = .bool(bool)
+    }
+    
+    public init(int: Int) throws {
+        self = .int(int)
+    }
+    
+    public init(int8: Int8) throws {
+        guard let int = Int(exactly: int8) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(int16: Int16) throws {
+        guard let int = Int(exactly: int16) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(int32: Int32) throws {
+        guard let int = Int(exactly: int32) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(int64: Int64) throws {
+        guard let int = Int(exactly: int64) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(uint: UInt) throws {
+        guard let int = Int(exactly: uint) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(uint8: UInt8) throws {
+        guard let int = Int(exactly: uint8) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(uint16: UInt16) throws {
+        guard let int = Int(exactly: uint16) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(uint32: UInt32) throws {
+        guard let int = Int(exactly: uint32) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(uint64: UInt64) throws {
+        guard let int = Int(exactly: uint64) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .int(int)
+    }
+    
+    public init(float: Float) throws {
+        guard let double = Double(exactly: float) else {
+            throw MapError.incompatibleType
+        }
+        
+        self = .double(double)
+    }
+    
+    public init(double: Double) throws {
+        self = .double(double)
+    }
+    
+    public init(string: String) throws {
+        self = .string(string)
+    }
+    
     public static func keyedContainer() throws -> Foo {
         return [:]
     }
@@ -743,12 +840,30 @@ extension Foo : Map {
         return []
     }
     
+    public var isNull: Bool {
+        if case .null = self {
+            return true
+        }
+        
+        return false
+    }
+    
+    public var keys: [String] {
+        guard case let .dictionary(dictionary) = self else {
+            return []
+        }
+        
+        return [String](dictionary.keys)
+    }
+    
     public func value(forKeys keys: [MappingKey]) throws -> Foo? {
         var value = self
         
         for key in keys {
             if let index = key.indexValue {
-                let array = try value.asArr()
+                guard case let .array(array) = value else {
+                    throw MapError.incompatibleType
+                }
                 
                 guard array.indices.contains(index) else {
                     return nil
@@ -759,7 +874,9 @@ extension Foo : Map {
             } else {
                 let key = key.keyValue
                 
-                let dictionary = try value.asDictionary()
+                guard case let .dictionary(dictionary) = value else {
+                    throw MapError.incompatibleType
+                }
                 
                 guard let newValue = dictionary[key] else {
                     return nil
@@ -773,89 +890,291 @@ extension Foo : Map {
         return value
     }
     
-    public func arrayValue(forKeys keys: [MappingKey]) throws -> [Map]? {
-        return try value(forKeys: keys)?.asArr()
+    public func arrayValue(forKeys keys: [MappingKey]) throws -> [Foo]? {
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        guard case let .array(array) = value else {
+            throw MapError.incompatibleType
+        }
+        
+        return array
     }
     
     public func boolValue(forKeys keys: [MappingKey]) throws -> Bool? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        guard case let .bool(bool) = value else {
+            throw MapError.incompatibleType
+        }
+        
+        return bool
     }
     
     public func intValue(forKeys keys: [MappingKey]) throws -> Int? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value {
+            return int
+        }
+        
+        if case let .double(double) = value, let int = Int(exactly: double) {
+            return int
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func int8Value(forKeys keys: [MappingKey]) throws -> Int8? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let int8 = Int8(exactly: int) {
+            return int8
+        }
+        
+        if case let .double(double) = value, let int8 = Int8(exactly: double) {
+            return int8
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func int16Value(forKeys keys: [MappingKey]) throws -> Int16? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let int16 = Int16(exactly: int) {
+            return int16
+        }
+        
+        if case let .double(double) = value, let int16 = Int16(exactly: double) {
+            return int16
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func int32Value(forKeys keys: [MappingKey]) throws -> Int32? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let int32 = Int32(exactly: int) {
+            return int32
+        }
+        
+        if case let .double(double) = value, let int32 = Int32(exactly: double) {
+            return int32
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func int64Value(forKeys keys: [MappingKey]) throws -> Int64? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let int64 = Int64(exactly: int) {
+            return int64
+        }
+        
+        if case let .double(double) = value, let int64 = Int64(exactly: double) {
+            return int64
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func uintValue(forKeys keys: [MappingKey]) throws -> UInt? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let uint = UInt(exactly: int) {
+            return uint
+        }
+        
+        if case let .double(double) = value, let uint = UInt(exactly: double) {
+            return uint
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func uint8Value(forKeys keys: [MappingKey]) throws -> UInt8? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let uint8 = UInt8(exactly: int) {
+            return uint8
+        }
+        
+        if case let .double(double) = value, let uint8 = UInt8(exactly: double) {
+            return uint8
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func uint16Value(forKeys keys: [MappingKey]) throws -> UInt16? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let uint16 = UInt16(exactly: int) {
+            return uint16
+        }
+        
+        if case let .double(double) = value, let uint16 = UInt16(exactly: double) {
+            return uint16
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func uint32Value(forKeys keys: [MappingKey]) throws -> UInt32? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let uint32 = UInt32(exactly: int) {
+            return uint32
+        }
+        
+        if case let .double(double) = value, let uint32 = UInt32(exactly: double) {
+            return uint32
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func uint64Value(forKeys keys: [MappingKey]) throws -> UInt64? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let uint64 = UInt64(exactly: int) {
+            return uint64
+        }
+        
+        if case let .double(double) = value, let uint64 = UInt64(exactly: double) {
+            return uint64
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func floatValue(forKeys keys: [MappingKey]) throws -> Float? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let float = Float(exactly: int) {
+            return float
+        }
+        
+        if case let .double(double) = value, let float = Float(exactly: double) {
+            return float
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func doubleValue(forKeys keys: [MappingKey]) throws -> Double? {
-        return try value(forKeys: keys)?.get()
+        guard let value = try value(forKeys: keys) else {
+            return nil
+        }
+        
+        if case .null = value {
+            return nil
+        }
+        
+        if case let .int(int) = value, let double = Double(exactly: int) {
+            return double
+        }
+        
+        if case let .double(double) = value {
+            return double
+        }
+        
+        throw MapError.incompatibleType
     }
     
     public func stringValue(forKeys keys: [MappingKey]) throws -> String? {
-        return try value(forKeys: keys)?.get()
-    }
-}
-
-extension Foo : OutMap {
-    mutating public func set(_ map: Foo, at indexPath: MappingKey) throws {
-        try self.set(map, for: [indexPath])
-    }
-    
-    mutating public func set(_ map: Foo, at indexPath: [MappingKey]) throws {
-        try self.set(map, for: indexPath)
-    }
-    
-    public static var blank: Foo {
-        return .dictionary([:])
-    }
-    
-    public static func fromArray(_ array: [Foo]) -> Foo? {
-        return .array(array)
-    }
-    
-    public static func from<T>(_ value: T) -> Foo? {
-        if let value = value as? MapRepresentable {
-            return value.map
+        guard let value = try value(forKeys: keys) else {
+            return nil
         }
         
-        return nil
+        if case .null = value {
+            return nil
+        }
+        
+        guard case let .string(string) = value else {
+            throw MapError.incompatibleType
+        }
+        
+        return string
     }
 }

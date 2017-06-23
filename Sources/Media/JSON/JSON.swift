@@ -95,14 +95,6 @@ extension JSON {
 }
 
 extension JSON {
-    public var isNull: Bool {
-        if case .null = self {
-            return true
-        }
-        
-        return false
-    }
-    
     public var isBool: Bool {
         if case .bool = self {
             return true

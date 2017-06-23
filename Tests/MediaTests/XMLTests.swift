@@ -4,16 +4,16 @@ import Foundation
 
 public class XMLTests: XCTestCase {
     func testXML() throws {
-        let xml = XML(name: "Root", children: [
-            XML(name: "Catalog", children: [
-                XML(name: "Book", attributes: ["id": "a"], children: [
-                    XML(name: "Author", children: ["Bob"]),
+        let xml = XMLElement(name: "Root", children: [
+            XMLElement(name: "Catalog", children: [
+                XMLElement(name: "Book", attributes: ["id": "a"], children: [
+                    XMLElement(name: "Author", children: ["Bob"]),
                 ]),
-                XML(name: "Book", attributes: ["id": "b"], children: [
-                    XML(name: "Author", children: ["John"]),
+                XMLElement(name: "Book", attributes: ["id": "b"], children: [
+                    XMLElement(name: "Author", children: ["John"]),
                 ]),
-                XML(name: "Book", attributes: ["id": "c"], children: [
-                    XML(name: "Author", children: ["Mark"]),
+                XMLElement(name: "Book", attributes: ["id": "c"], children: [
+                    XMLElement(name: "Author", children: ["Mark"]),
                 ]),
             ]),
         ])

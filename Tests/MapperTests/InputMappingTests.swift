@@ -15,7 +15,7 @@ struct Test1 : InputMappable {
         case bool
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         int = try mapper.map(from: .int)
         string = try mapper.map(from: .string)
         double = try mapper.map(from: .double)
@@ -30,7 +30,7 @@ struct Nest2 : InputMappable {
         case int
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.int = try mapper.map(from: .int)
     }
 }
@@ -46,7 +46,7 @@ struct Test2 : InputMappable {
         case nest
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.string = try mapper.map(from: .string)
         self.ints = try mapper.map(from: .ints)
         self.nest = try mapper.map(from: .nest)
@@ -60,7 +60,7 @@ struct Test3 : InputMappable {
         case rio = "rio-2016"
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.rio = try mapper.map(from: .rio)
     }
 }
@@ -72,7 +72,7 @@ struct Test4 : InputMappable {
         case ints
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.ints = try mapper.map(from: .ints)
     }
 }
@@ -84,7 +84,7 @@ struct Test5 : InputMappable {
         case nests
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.nests = try mapper.map(from: .nests)
     }
 }
@@ -109,7 +109,7 @@ struct Test6 : InputMappable {
         case int = "city"
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.string = try mapper.map(from: .string)
         self.int = try mapper.map(from: .int)
     }
@@ -124,7 +124,7 @@ struct Test7 : InputMappable {
         case ints = "ukraine-capitals"
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.strings = try mapper.map(from: .strings)
         self.ints = try mapper.map(from: .ints)
     }
@@ -137,7 +137,7 @@ struct Test8 : InputMappable {
         case string = "project"
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.string = try mapper.map(from: .string)
     }
 }
@@ -151,7 +151,7 @@ enum TestContext {
 struct Nest3 : ContextInputMappable {
     let int: Int
     
-    init(mapper: ContextualMapper<String, TestContext>) throws {
+    init<Source>(mapper: ContextualMapper<Source, String, TestContext>) throws {
         switch mapper.context {
         case .apple:
             int = try mapper.map(from: "apple-int")
@@ -166,7 +166,7 @@ struct Nest3 : ContextInputMappable {
 struct Test9 : ContextInputMappable {
     let nest: Nest3
     
-    init(mapper: ContextualMapper<String, TestContext>) throws {
+    init<Source>(mapper: ContextualMapper<Source, String, TestContext>) throws {
         self.nest = try mapper.map(from: "nest")
     }
 }
@@ -174,7 +174,7 @@ struct Test9 : ContextInputMappable {
 struct Test10 : ContextInputMappable {
     let nests: [Nest3]
     
-    init(mapper: ContextualMapper<String, TestContext>) throws {
+    init<Source>(mapper: ContextualMapper<Source, String, TestContext>) throws {
         self.nests = try mapper.map(from: "nests")
     }
 }
@@ -183,16 +183,16 @@ struct Test11 : InputMappable {
     let nest: Nest3
     let nests: [Nest3]
     
-    init(mapper: Mapper<String>) throws {
-        self.nest = try mapper.map(from: "nest", context: .peach)
-        self.nests = try mapper.map(from: "nests", context: .orange)
+    init<Map>(mapper: Mapper<Map, String>) throws {
+        nest = try mapper.map(from: "nest", context: .peach)
+        nests = try mapper.map(from: "nests", context: .orange)
     }
 }
 
 struct Test12 : InputMappable {
     let hiddenFar: String
     
-    init(mapper: Mapper<String>) throws {
+    init<Source>(mapper: Mapper<Source, String>) throws {
         self.hiddenFar = try mapper.map(from: "deeper", "stillDeeper", "close", "gotcha")
     }
 }
@@ -200,7 +200,7 @@ struct Test12 : InputMappable {
 struct Test13 : InputMappable {
     let nests: [Nest2]
     
-    init(mapper: Mapper<String>) throws {
+    init<Source>(mapper: Mapper<Source, String>) throws {
         self.nests = try mapper.map()
     }
 }
@@ -208,7 +208,7 @@ struct Test13 : InputMappable {
 struct DictNest : InputMappable {
     let int: Int
     
-    init(mapper: Mapper<String>) throws {
+    init<Source>(mapper: Mapper<Source, String>) throws {
         self.int = try mapper.map(from: "int")
     }
 }
@@ -222,7 +222,7 @@ struct DictTest : InputMappable {
     let nests: [DictNest]
     let null: Bool?
     
-    init(mapper: Mapper<String>) throws {
+    init<Source>(mapper: Mapper<Source, String>) throws {
         self.int = try mapper.map(from: "int")
         self.string = try mapper.map(from: "here", "string")
         self.double = try mapper.map(from: "double")
@@ -245,7 +245,7 @@ enum AdvancedEnum {
 }
 
 extension AdvancedEnum: InputMappable {
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         let main: String = try mapper.map(from: .main)
         switch main {
         case "fire":
@@ -262,7 +262,7 @@ extension AdvancedEnum: InputMappable {
 
 #if os(macOS)
 extension InputMappable where Self : NSDate {
-    public init(mapper: Mapper<String>) throws {
+    public init<Source>(mapper: Mapper<Source, String>) throws {
         let interval: TimeInterval = try mapper.map()
         self.init(timeIntervalSince1970: interval)
     }
@@ -280,7 +280,7 @@ struct Test15 : InputMappable {
         case date
     }
     
-    init(mapper: Mapper<Key>) throws {
+    init<Source>(mapper: Mapper<Source, Key>) throws {
         self.date = try mapper.map(from: .date)
     }
 }
@@ -291,7 +291,7 @@ public enum DateMappingContext {
 }
 
 extension Date : ContextInputMappable {
-    public init(mapper: ContextualMapper<String, DateMappingContext>) throws {
+    public init<Source>(mapper: ContextualMapper<Source, String, DateMappingContext>) throws {
         let interval: TimeInterval = try mapper.map()
         switch mapper.context {
         case .timeIntervalSince1970:
@@ -491,11 +491,9 @@ class MapperTests : XCTestCase {
     func testMapCoder() throws {
         let coder = MapCoder()
         
-        let foo: Foo = [
-            "foo": "bar"
-        ]
+        let foo: Foo = ["foo": [3.0, nil]]
         
-        let bar: Bar = try coder.decode(foo)
+        let bar: [String: [Double?]?]? = try coder.decode(foo)
         
         print(bar)
     }
