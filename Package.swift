@@ -17,14 +17,12 @@ let package = Package(
         .target(name: "CYAJL"),
         .target(name: "CHTTPParser"),
         
-        .target(name: "Mapper", dependencies: ["Core"]),
         .target(name: "Core", dependencies: ["Venice"]),
         .target(name: "IO", dependencies: ["Core"]),
-        .target(name: "Media", dependencies: ["Mapper", "Core", "CYAJL"]),
+        .target(name: "Media", dependencies: ["Core", "CYAJL"]),
         .target(name: "HTTP", dependencies: ["Media", "IO", "CHTTPParser"]),
         .target(name: "Zewo", dependencies: ["Core", "IO", "Media", "HTTP"]),
         
-        .testTarget(name: "MapperTests", dependencies: ["Mapper"]),
         .testTarget(name: "CoreTests", dependencies: ["Core"]),
         .testTarget(name: "IOTests", dependencies: ["IO"]),
         .testTarget(name: "MediaTests", dependencies: ["Media"]),

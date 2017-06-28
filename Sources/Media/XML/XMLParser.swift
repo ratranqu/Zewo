@@ -92,7 +92,7 @@ public class XMLParser : NSObject, XMLParserDelegate {
         _ stream: Readable,
         bufferSize: Int = 4096,
         deadline: Deadline
-    ) throws -> XMLElement {
+    ) throws -> XML {
         let xmlParser = XMLParser()
         
         let parseStream = ParserStream(stream: stream, deadline: deadline)
@@ -107,7 +107,7 @@ public class XMLParser : NSObject, XMLParserDelegate {
             throw XMLParserError.invalidXML
         }
         
-        return root
+        return XML(root: root)
     }
     
     public func parser(
@@ -117,7 +117,7 @@ public class XMLParser : NSObject, XMLParserDelegate {
         qualifiedName: String?,
         attributes: [String: String]
     ) {
-        let element = XMLElement(name: name, attributes: attributes)
+        let element = XML.Element(name: name, attributes: attributes)
         
         if !stack.isEmpty {
             stack.addElement(element)
@@ -141,10 +141,10 @@ public class XMLParser : NSObject, XMLParserDelegate {
 }
 
 struct Stack {
-    var root: XMLElement?
-    private var items: [XMLElement] = []
+    var root: XML.Element?
+    private var items: [XML.Element] = []
     
-    mutating func push(_ item: XMLElement) {
+    mutating func push(_ item: XML.Element) {
         if root == nil {
             root = item
         }
@@ -160,15 +160,15 @@ struct Stack {
         items.removeAll(keepingCapacity: false)
     }
     
-    mutating func addElement(_ element: XMLElement) {
+    mutating func addElement(_ element: XML.Element) {
         var item = items[items.count - 1]
-        item.addElement(element)
+        item.add(element: element)
         items[items.count - 1] = item
     }
     
     mutating func addContent(_ content: String) {
         var item = items[items.count - 1]
-        item.addContent(content)
+        item.add(content: content)
         items[items.count - 1] = item
     }
     
