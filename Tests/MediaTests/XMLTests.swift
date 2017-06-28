@@ -2,7 +2,7 @@ import XCTest
 @testable import Media
 import Foundation
 
-struct Book : Decodable {
+struct Book : Codable {
     let author: String
     
     enum Key : String, CodingKey {
@@ -13,9 +13,14 @@ struct Book : Decodable {
         let container = try decoder.container(keyedBy: Key.self)
         author = try container.decode(String.self, forKey: .author)
     }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        try container.encode(author, forKey: .author)
+    }
 }
 
-struct Catalog : Decodable {
+struct Catalog : Codable {
     let books: [Book]
     
     enum Key : String, CodingKey {
@@ -24,11 +29,16 @@ struct Catalog : Decodable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
-        self.books = try container.decode([Book].self, forKey: .book)
+        books = try container.decode([Book].self, forKey: .book)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        try container.encode(books, forKey: .book)
     }
 }
 
-struct Root : Decodable {
+struct Root : Codable {
     let catalog: Catalog
     
     enum Key : String, CodingKey {
@@ -38,6 +48,11 @@ struct Root : Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         catalog = try container.decode(Catalog.self, forKey: .catalog)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        try container.encode(catalog, forKey: .catalog)
     }
 }
 
@@ -58,7 +73,7 @@ public class XMLTests: XCTestCase {
                 ])
             )
             
-            let json: JSON = [
+            var json: JSON = [
                 "Catalog": [
                     "Book": [
                         ["Author": "Bob"],
@@ -75,6 +90,9 @@ public class XMLTests: XCTestCase {
             
             root = try Root(from: xml)
             print(root)
+            
+            json = try JSON(from: root)
+            print(json)
         } catch {
             print(error)
         }

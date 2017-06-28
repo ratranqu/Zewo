@@ -110,14 +110,12 @@ public struct XML {
         }
     }
     
-    public let root: Element
+    public var root: Element
     
     public init(root: Element) {
         self.root = root
     }
 }
-
-
 
 extension XML.Element : CustomStringConvertible {
     public var description: String {

@@ -1,5 +1,151 @@
-//import Mapper
-//
+extension JSON : EncodingMap {
+    public func topLevel() throws -> EncodingMap {
+        if isObject {
+            return self
+        }
+        
+        if isArray {
+            return self
+        }
+        
+        throw EncodingError.invalidValue(self, EncodingError.Context())
+    }
+    
+    public static func makeKeyedContainer() throws -> EncodingMap {
+        return JSON.object([:])
+    }
+    
+    public static func makeUnkeyedContainer() throws -> EncodingMap {
+        return JSON.array([])
+    }
+    
+    public mutating func encode(_ value: EncodingMap, forKey key: CodingKey) throws {
+        guard case var .object(object) = self else {
+            throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: [key]))
+        }
+        
+        guard let json = value as? JSON else {
+            throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: [key]))
+        }
+        
+        object[key.stringValue] = json
+        self = .object(object)
+    }
+    
+    public mutating func encode(_ value: EncodingMap) throws {
+        guard case var .array(array) = self else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        guard let json = value as? JSON else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        array.append(json)
+        self = .array(array)
+    }
+    
+    public static func encodeNil() throws -> EncodingMap {
+        return JSON.null
+    }
+    
+    public static func encode(_ value: Bool) throws -> EncodingMap {
+        return JSON.bool(value)
+    }
+    
+    public static func encode(_ value: Int) throws -> EncodingMap {
+        return JSON.int(value)
+    }
+    
+    public static func encode(_ value: Int8) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: Int16) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: Int32) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: Int64) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: UInt) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: UInt8) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: UInt16) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: UInt32) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: UInt64) throws -> EncodingMap {
+        guard let int = Int(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.int(int)
+    }
+    
+    public static func encode(_ value: Float) throws -> EncodingMap {
+        guard let double = Double(exactly: value) else {
+            throw EncodingError.invalidValue(value, EncodingError.Context())
+        }
+        
+        return JSON.double(double)
+    }
+    
+    public static func encode(_ value: Double) throws -> EncodingMap {
+        return JSON.double(value)
+    }
+    
+    public static func encode(_ value: String) throws -> EncodingMap {
+        return JSON.string(value)
+    }
+}
+
 //extension JSON : Map {
 //    public func contains(_ key: CodingKey) -> Bool {
 //        fatalError()

@@ -12,8 +12,14 @@ struct MapStack<T> {
         return stack.last!
     }
     
-    mutating func push(_ map: T) {
-        stack.append(map)
+    mutating func withTop(body: (inout T) throws -> Void) rethrows -> Void {
+        var top = self.top
+        try body(&top)
+        stack[stack.count - 1] = top
+    }
+    
+    mutating func push(_ value: T) {
+        stack.append(value)
     }
     
     @discardableResult mutating func pop() -> T {
@@ -21,8 +27,8 @@ struct MapStack<T> {
         return stack.popLast()!
     }
     
-    mutating func pushing<R>(_ map: T, body: () throws -> R) rethrows -> R {
-        push(map)
+    mutating func pushing<R>(_ value: T, body: () throws -> R) rethrows -> R {
+        push(value)
         let result: R = try body()
         pop()
         return result

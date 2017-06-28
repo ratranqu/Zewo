@@ -1,27 +1,5 @@
-public protocol EncodingMap {
-    static func makeKeyedContainer() throws -> EncodingMap
-    static func makeUnkeyedContainer() throws -> EncodingMap
-    
-    init(array: [EncodingMap]) throws
-    
-    init(null: Void) throws
-    init(bool: Bool) throws
-    init(int: Int) throws
-    init(int8: Int8) throws
-    init(int16: Int16) throws
-    init(int32: Int32) throws
-    init(int64: Int64) throws
-    init(uint: UInt) throws
-    init(uint8: UInt8) throws
-    init(uint16: UInt16) throws
-    init(uint32: UInt32) throws
-    init(uint64: UInt64) throws
-    init(float: Float) throws
-    init(double: Double) throws
-    init(string: String) throws
-    
-    mutating func set(_ value: EncodingMap, forKeys keys: [CodingKey]) throws
-    mutating func append(_ value: EncodingMap) throws
+enum MapSuperKey : String, CodingKey {
+    case `super`
 }
 
 extension String : CodingKey {
