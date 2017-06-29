@@ -1,8 +1,8 @@
-struct MapSingleValueDecodingContainer<Map : DecodingMap> : SingleValueDecodingContainer {
-    let decoder: MapDecoder<Map>
-    let map: DecodingMap
+struct MediaSingleValueDecodingContainer<Map : DecodingMedia> : SingleValueDecodingContainer {
+    let decoder: MediaDecoder<Map>
+    let map: DecodingMedia
     
-    init(referencing decoder: MapDecoder<Map>, wrapping map: DecodingMap) {
+    init(referencing decoder: MediaDecoder<Map>, wrapping map: DecodingMedia) {
         self.decoder = decoder
         self.map = map
     }
@@ -68,7 +68,7 @@ struct MapSingleValueDecodingContainer<Map : DecodingMap> : SingleValueDecodingC
     }
     
     func decode<T : Decodable>(_ type: T.Type) throws -> T {
-        return try decoder.stack.pushing(map) {
+        return try decoder.stack.pushPop(map) {
             try T(from: decoder)
         }
     }

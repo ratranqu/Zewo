@@ -1,9 +1,9 @@
-final class MapKeyedEncodingContainer<Map : EncodingMap, K : CodingKey> : KeyedEncodingContainerProtocol {
+final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : KeyedEncodingContainerProtocol {
     typealias Key = K
-    let encoder: MapEncoder<Map>
+    let encoder: MediaEncoder<Map>
     var codingPath: [CodingKey?]
     
-    init(referencing encoder: MapEncoder<Map>, codingPath: [CodingKey?]) {
+    init(referencing encoder: MediaEncoder<Map>, codingPath: [CodingKey?]) {
         self.encoder = encoder
         self.codingPath = codingPath
     }
@@ -148,7 +148,7 @@ final class MapKeyedEncodingContainer<Map : EncodingMap, K : CodingKey> : KeyedE
         }
         
         return with(pushedKey: key) {
-            let container = MapKeyedEncodingContainer<Map, NestedKey>(
+            let container = MediaKeyedEncodingContainer<Map, NestedKey>(
                 referencing: encoder,
                 codingPath: codingPath
             )
@@ -167,7 +167,7 @@ final class MapKeyedEncodingContainer<Map : EncodingMap, K : CodingKey> : KeyedE
         }
         
         return with(pushedKey: key) {
-            return MapUnkeyedEncodingContainer(
+            return MediaUnkeyedEncodingContainer(
                 referencing: encoder,
                 codingPath: codingPath
             )
@@ -175,7 +175,7 @@ final class MapKeyedEncodingContainer<Map : EncodingMap, K : CodingKey> : KeyedE
     }
     
     func superEncoder() -> Encoder {
-        return MapReferencingEncoder(referencing: encoder, at: MapSuperKey.super) { value in
+        return MediaReferencingEncoder(referencing: encoder, at: MapSuperKey.super) { value in
             try self.encoder.stack.withTop { map in
                 try map.encode(value, forKey: MapSuperKey.super)
             }
@@ -183,7 +183,7 @@ final class MapKeyedEncodingContainer<Map : EncodingMap, K : CodingKey> : KeyedE
     }
     
     func superEncoder(forKey key: Key) -> Encoder {
-        return MapReferencingEncoder(referencing: encoder, at: key) { value in
+        return MediaReferencingEncoder(referencing: encoder, at: key) { value in
             try self.encoder.stack.withTop { map in
                 try map.encode(value, forKey: key)
             }

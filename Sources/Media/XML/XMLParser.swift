@@ -30,14 +30,14 @@ public enum XMLParserError : Error {
 }
 
 fileprivate class ParserStream : InputStream {
-    private let stream: Readable
+    private let readable: Readable
     private let deadline: Deadline
     private let buffer: UnsafeMutableRawBufferPointer
     private var lastError: Error?
     private var finished = false
     
-    fileprivate init(stream: Readable, deadline: Deadline, bufferSize: Int = 4096) {
-        self.stream = stream
+    fileprivate init(readable: Readable, deadline: Deadline, bufferSize: Int = 4096) {
+        self.readable = readable
         self.deadline = deadline
         self.buffer = UnsafeMutableRawBufferPointer.allocate(count: bufferSize)
         super.init(data: Data())
@@ -58,7 +58,7 @@ fileprivate class ParserStream : InputStream {
         let buffer = UnsafeMutableRawBufferPointer(start: buffer, count: count)
         
         do {
-            let read = try stream.read(buffer, deadline: deadline)
+            let read = try readable.read(buffer, deadline: deadline)
             
             if read.isEmpty {
                 finished = true
@@ -86,16 +86,15 @@ fileprivate class ParserStream : InputStream {
 }
 
 public class XMLParser : NSObject, XMLParserDelegate {
-    var stack = Stack()
+    var stack = ElementStack()
     
     public static func parse(
-        _ stream: Readable,
+        _ readable: Readable,
         bufferSize: Int = 4096,
         deadline: Deadline
     ) throws -> XML {
         let xmlParser = XMLParser()
-        
-        let parseStream = ParserStream(stream: stream, deadline: deadline)
+        let parseStream = ParserStream(readable: readable, deadline: deadline)
         let parser = Foundation.XMLParser(stream: parseStream)
         parser.delegate = xmlParser
         
@@ -140,7 +139,7 @@ public class XMLParser : NSObject, XMLParserDelegate {
     }
 }
 
-struct Stack {
+struct ElementStack {
     var root: XML.Element?
     private var items: [XML.Element] = []
     
@@ -201,7 +200,7 @@ extension XMLParserDelegate {
         _ parser: Foundation.XMLParser,
         foundAttributeDeclarationWithName attributeName: String,
         forElement elementName: String,
-        type: String?,
+        media: String?,
         defaultValue: String?
     ) {}
     

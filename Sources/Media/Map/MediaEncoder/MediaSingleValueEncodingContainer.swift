@@ -1,4 +1,4 @@
-extension MapEncoder : SingleValueEncodingContainer {
+extension MediaEncoder : SingleValueEncodingContainer {
     func assertCanEncodeSingleValue() {
         guard canEncodeNewElement else {
             preconditionFailure("Attempt to encode with new container when already encoded with a container.")

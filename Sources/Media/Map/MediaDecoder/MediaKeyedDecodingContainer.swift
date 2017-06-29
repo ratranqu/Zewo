@@ -1,11 +1,11 @@
-struct MapKeyedDecodingContainer<K : CodingKey, Map : DecodingMap> : KeyedDecodingContainerProtocol {
+struct MediaKeyedDecodingContainer<K : CodingKey, Map : DecodingMedia> : KeyedDecodingContainerProtocol {
     typealias Key = K
     
-    let decoder: MapDecoder<Map>
-    let map: DecodingMap
+    let decoder: MediaDecoder<Map>
+    let map: DecodingMedia
     var codingPath: [CodingKey?]
     
-    init(referencing decoder: MapDecoder<Map>, wrapping map: DecodingMap) {
+    init(referencing decoder: MediaDecoder<Map>, wrapping map: DecodingMedia) {
         self.decoder = decoder
         self.map = map
         self.codingPath = decoder.codingPath
@@ -109,7 +109,7 @@ struct MapKeyedDecodingContainer<K : CodingKey, Map : DecodingMap> : KeyedDecodi
                 return nil
             }
             
-            return try decoder.stack.pushing(value) {
+            return try decoder.stack.pushPop(value) {
                 try T(from: decoder)
             }
         }
@@ -120,7 +120,7 @@ struct MapKeyedDecodingContainer<K : CodingKey, Map : DecodingMap> : KeyedDecodi
         forKey key: Key
     ) throws -> KeyedDecodingContainer<NestedKey> {
         return try decoder.with(pushedKey: key) {
-            let container = MapKeyedDecodingContainer<NestedKey, Map>(
+            let container = MediaKeyedDecodingContainer<NestedKey, Map>(
                 referencing: decoder,
                 wrapping: try map.keyedContainer(forKey: key)
             )
@@ -131,7 +131,7 @@ struct MapKeyedDecodingContainer<K : CodingKey, Map : DecodingMap> : KeyedDecodi
     
     func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
         return try decoder.with(pushedKey: key) {
-            return MapUnkeyedDecodingContainer(
+            return MediaUnkeyedDecodingContainer(
                 referencing: decoder,
                 wrapping: try map.unkeyedContainer(forKey: key)
             )
@@ -160,7 +160,7 @@ struct MapKeyedDecodingContainer<K : CodingKey, Map : DecodingMap> : KeyedDecodi
                 throw DecodingError.keyNotFound(key, context)
             }
             
-            return MapDecoder<Map>(
+            return MediaDecoder<Map>(
                 referencing: value,
                 at: decoder.codingPath,
                 userInfo: decoder.userInfo

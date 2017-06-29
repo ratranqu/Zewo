@@ -1,32 +1,32 @@
-public protocol EncodingMap {
-    func topLevel() throws -> EncodingMap
+public protocol EncodingMedia {
+    func topLevel() throws -> EncodingMedia
     
-    static func makeKeyedContainer() throws -> EncodingMap
-    static func makeUnkeyedContainer() throws -> EncodingMap
+    static func makeKeyedContainer() throws -> EncodingMedia
+    static func makeUnkeyedContainer() throws -> EncodingMedia
     
-    mutating func encode(_ value: EncodingMap, forKey key: CodingKey) throws
-    mutating func encode(_ value: EncodingMap) throws
+    mutating func encode(_ value: EncodingMedia, forKey key: CodingKey) throws
+    mutating func encode(_ value: EncodingMedia) throws
     
-    static func encodeNil() throws -> EncodingMap
-    static func encode(_ value: Bool) throws -> EncodingMap
-    static func encode(_ value: Int) throws -> EncodingMap
-    static func encode(_ value: Int8) throws -> EncodingMap
-    static func encode(_ value: Int16) throws -> EncodingMap
-    static func encode(_ value: Int32) throws -> EncodingMap
-    static func encode(_ value: Int64) throws -> EncodingMap
-    static func encode(_ value: UInt) throws -> EncodingMap
-    static func encode(_ value: UInt8) throws -> EncodingMap
-    static func encode(_ value: UInt16) throws -> EncodingMap
-    static func encode(_ value: UInt32) throws -> EncodingMap
-    static func encode(_ value: UInt64) throws -> EncodingMap
-    static func encode(_ value: Float) throws -> EncodingMap
-    static func encode(_ value: Double) throws -> EncodingMap
-    static func encode(_ value: String) throws -> EncodingMap
+    static func encodeNil() throws -> EncodingMedia
+    static func encode(_ value: Bool) throws -> EncodingMedia
+    static func encode(_ value: Int) throws -> EncodingMedia
+    static func encode(_ value: Int8) throws -> EncodingMedia
+    static func encode(_ value: Int16) throws -> EncodingMedia
+    static func encode(_ value: Int32) throws -> EncodingMedia
+    static func encode(_ value: Int64) throws -> EncodingMedia
+    static func encode(_ value: UInt) throws -> EncodingMedia
+    static func encode(_ value: UInt8) throws -> EncodingMedia
+    static func encode(_ value: UInt16) throws -> EncodingMedia
+    static func encode(_ value: UInt32) throws -> EncodingMedia
+    static func encode(_ value: UInt64) throws -> EncodingMedia
+    static func encode(_ value: Float) throws -> EncodingMedia
+    static func encode(_ value: Double) throws -> EncodingMedia
+    static func encode(_ value: String) throws -> EncodingMedia
     
     // Optional
     
-    static func makeKeyedContainer(forKey key: CodingKey) throws -> EncodingMap
-    static func makeUnkeyedContainer(forKey key: CodingKey) throws -> EncodingMap
+    static func makeKeyedContainer(forKey key: CodingKey) throws -> EncodingMedia
+    static func makeUnkeyedContainer(forKey key: CodingKey) throws -> EncodingMedia
     
     mutating func encode(_ value: Bool, forKey key: CodingKey) throws
     mutating func encode(_ value: Int, forKey key: CodingKey) throws
@@ -59,12 +59,12 @@ public protocol EncodingMap {
     mutating func encode(_ value: String) throws
 }
 
-extension EncodingMap {
-    public static func makeKeyedContainer(forKey key: CodingKey) throws -> EncodingMap {
+extension EncodingMedia {
+    public static func makeKeyedContainer(forKey key: CodingKey) throws -> EncodingMedia {
         return try makeKeyedContainer()
     }
     
-    public static func makeUnkeyedContainer(forKey key: CodingKey) throws -> EncodingMap {
+    public static func makeUnkeyedContainer(forKey key: CodingKey) throws -> EncodingMedia {
         return try makeKeyedContainer()
     }
     

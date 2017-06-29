@@ -1,8 +1,8 @@
-final class MapUnkeyedEncodingContainer<Map : EncodingMap> : UnkeyedEncodingContainer {
-    let encoder: MapEncoder<Map>
+final class MediaUnkeyedEncodingContainer<Map : EncodingMedia> : UnkeyedEncodingContainer {
+    let encoder: MediaEncoder<Map>
     var codingPath: [CodingKey?]
     
-    init(referencing encoder: MapEncoder<Map>, codingPath: [CodingKey?]) {
+    init(referencing encoder: MediaEncoder<Map>, codingPath: [CodingKey?]) {
         self.encoder = encoder
         self.codingPath = codingPath
     }
@@ -144,7 +144,7 @@ final class MapUnkeyedEncodingContainer<Map : EncodingMap> : UnkeyedEncodingCont
         }
         
         return with(pushedKey: nil) {
-            let container = MapKeyedEncodingContainer<Map, NestedKey>(
+            let container = MediaKeyedEncodingContainer<Map, NestedKey>(
                 referencing: encoder,
                 codingPath: codingPath
             )
@@ -163,7 +163,7 @@ final class MapUnkeyedEncodingContainer<Map : EncodingMap> : UnkeyedEncodingCont
         }
         
         return with(pushedKey: nil) {
-            return MapUnkeyedEncodingContainer(
+            return MediaUnkeyedEncodingContainer(
                 referencing: encoder,
                 codingPath: codingPath
             )
@@ -171,7 +171,7 @@ final class MapUnkeyedEncodingContainer<Map : EncodingMap> : UnkeyedEncodingCont
     }
     
     func superEncoder() -> Encoder {
-        return MapReferencingEncoder(referencing: encoder, at: nil) { value in
+        return MediaReferencingEncoder(referencing: encoder, at: nil) { value in
             try self.encoder.stack.withTop { map in
                 try map.encode(value)
             }

@@ -1,20 +1,20 @@
 import Core
 
-extension EncodingMap {
+extension EncodingMedia {
     public init(from encodable: Encodable, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
-        let encoder = MapEncoder<Self>(userInfo: userInfo)
+        let encoder = MediaEncoder<Self>(userInfo: userInfo)
         try encodable.encode(to: encoder)
         self = try encoder.topLevelMap()
     }
 }
 
-class MapEncoder<Map : EncodingMap> : Encoder {
-    var stack: MapStack<EncodingMap>
+class MediaEncoder<Map : EncodingMedia> : Encoder {
+    var stack: Stack<EncodingMedia>
     var codingPath: [CodingKey?]
     var userInfo: [CodingUserInfoKey: Any]
     
     init(codingPath: [CodingKey?] = [], userInfo: [CodingUserInfoKey: Any]) {
-        self.stack = MapStack()
+        self.stack = Stack()
         self.codingPath = codingPath
         self.userInfo = userInfo
     }
@@ -51,7 +51,7 @@ class MapEncoder<Map : EncodingMap> : Encoder {
             fatalError("return a failure container")
         }
         
-        let container = MapKeyedEncodingContainer<Map, Key>(
+        let container = MediaKeyedEncodingContainer<Map, Key>(
             referencing: self,
             codingPath: codingPath
         )
@@ -68,7 +68,7 @@ class MapEncoder<Map : EncodingMap> : Encoder {
             fatalError("return a failure container")
         }
         
-        return MapUnkeyedEncodingContainer<Map>(
+        return MediaUnkeyedEncodingContainer<Map>(
             referencing: self,
             codingPath: codingPath
         )
@@ -100,8 +100,8 @@ class MapEncoder<Map : EncodingMap> : Encoder {
     }
 }
 
-extension MapEncoder {
-    func box<T : Encodable>(_ value: T) throws -> EncodingMap {
+extension MediaEncoder {
+    func box<T : Encodable>(_ value: T) throws -> EncodingMedia {
         let count = stack.count
         try value.encode(to: self)
         

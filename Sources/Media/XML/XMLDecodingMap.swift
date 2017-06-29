@@ -1,4 +1,15 @@
-extension XML : DecodingMap {
+import Core
+import Venice
+
+extension XML : DecodingMedia {
+    public static var mediaType: MediaType {
+        return .xml
+    }
+    
+    public init(from readable: Readable, deadline: Deadline) throws {
+        self = try XMLParser.parse(readable, deadline: deadline)
+    }
+    
     public func keyCount() -> Int? {
         return 1
     }
@@ -11,22 +22,22 @@ extension XML : DecodingMap {
         return root.name == key.stringValue
     }
     
-    public func keyedContainer() throws -> DecodingMap {
+    public func keyedContainer() throws -> DecodingMedia {
         return self
     }
     
-    public func unkeyedContainer() throws -> DecodingMap {
-        throw DecodingError.typeMismatch(DecodingMap.self, DecodingError.Context())
+    public func unkeyedContainer() throws -> DecodingMedia {
+        throw DecodingError.typeMismatch(DecodingMedia.self, DecodingError.Context())
     }
     
-    public func singleValueContainer() throws -> DecodingMap {
-        throw DecodingError.typeMismatch(DecodingMap.self, DecodingError.Context())
+    public func singleValueContainer() throws -> DecodingMedia {
+        throw DecodingError.typeMismatch(DecodingMedia.self, DecodingError.Context())
     }
     
     public func decodeIfPresent(
-        _ type: DecodingMap.Type,
+        _ type: DecodingMedia.Type,
         forKey key: CodingKey
-    ) throws -> DecodingMap? {
+    ) throws -> DecodingMedia? {
         guard root.name == key.stringValue else {
             return nil
         }
@@ -100,7 +111,16 @@ enum XMLMap {
     case multiple([XML.Element])
 }
 
-extension XMLMap : DecodingMap {
+extension XMLMap : DecodingMedia {
+    static var mediaType: MediaType {
+        return .xml
+    }
+    
+    init(from readable: Readable, deadline: Deadline) throws {
+        let xml = try XML(from: readable, deadline: deadline)
+        self = .single(xml.root)
+    }
+    
     public func keyCount() -> Int? {
         switch self {
         case let .single(element):
@@ -128,37 +148,37 @@ extension XMLMap : DecodingMap {
         }
     }
     
-    public func keyedContainer() throws -> DecodingMap {
+    public func keyedContainer() throws -> DecodingMedia {
         switch self {
         case .single:
             return self
         default:
-            throw DecodingError.typeMismatch(DecodingMap.self, DecodingError.Context())
+            throw DecodingError.typeMismatch(DecodingMedia.self, DecodingError.Context())
         }
     }
     
-    public func unkeyedContainer() throws -> DecodingMap {
+    public func unkeyedContainer() throws -> DecodingMedia {
         switch self {
         case .multiple:
             return self
         default:
-            throw DecodingError.typeMismatch(DecodingMap.self, DecodingError.Context())
+            throw DecodingError.typeMismatch(DecodingMedia.self, DecodingError.Context())
         }
     }
     
-    public func singleValueContainer() throws -> DecodingMap {
+    public func singleValueContainer() throws -> DecodingMedia {
         switch self {
         case .single:
             return self
         default:
-            throw DecodingError.typeMismatch(DecodingMap.self, DecodingError.Context())
+            throw DecodingError.typeMismatch(DecodingMedia.self, DecodingError.Context())
         }
     }
     
     public func decodeIfPresent(
-        _ type: DecodingMap.Type,
+        _ type: DecodingMedia.Type,
         forKey key: CodingKey
-    ) throws -> DecodingMap? {
+    ) throws -> DecodingMedia? {
         switch self {
         case let .single(element):
             let elements = element.elements(named: key.stringValue)

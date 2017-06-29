@@ -1,12 +1,12 @@
-class MapReferencingEncoder<Map : EncodingMap> : MapEncoder<Map> {
-    let encoder: MapEncoder<Map>
-    let write: (EncodingMap) throws -> Void
+class MediaReferencingEncoder<Map : EncodingMedia> : MediaEncoder<Map> {
+    let encoder: MediaEncoder<Map>
+    let write: (EncodingMedia) throws -> Void
     
     init(
-        referencing encoder: MapEncoder<Map>,
+        referencing encoder: MediaEncoder<Map>,
         at key: CodingKey?,
-        write: @escaping (EncodingMap) throws -> Void
-        ) {
+        write: @escaping (EncodingMedia) throws -> Void
+    ) {
         self.encoder = encoder
         self.write = write
         super.init(codingPath: encoder.codingPath, userInfo: encoder.userInfo)
@@ -21,7 +21,7 @@ class MapReferencingEncoder<Map : EncodingMap> : MapEncoder<Map> {
     }
     
     deinit {
-        let value: EncodingMap
+        let value: EncodingMedia
         
         switch stack.count {
         case 0: value = try! Map.makeKeyedContainer()

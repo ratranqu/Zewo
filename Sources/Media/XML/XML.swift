@@ -1,10 +1,6 @@
 public enum XMLError : Error {
     case noContent(type: Any.Type)
     case cannotInitialize(type: Any.Type, xml: XML.Element)
-    case valueNotArray(indexPath: [IndexPathComponent], xml: XML.Element)
-    case outOfBounds(indexPath: [IndexPathComponent], xml: XML.Element)
-    case valueNotDictionary(indexPath: [IndexPathComponent], xml: XML.Element)
-    case valueNotFound(indexPath: [IndexPathComponent], xml: XML.Element)
 }
 
 extension XMLError : CustomStringConvertible {
@@ -14,14 +10,6 @@ extension XMLError : CustomStringConvertible {
             return "Cannot initialize type \"\(String(describing: type))\" with no content."
         case let .cannotInitialize(type, xml):
             return "Cannot initialize type \"\(String(describing: type))\" with xml \(xml)."
-        case let .valueNotArray(indexPath, content):
-            return "Cannot get xml element for index path \"\(indexPath.string)\". Element is not an array \(content)."
-        case let .outOfBounds(indexPath, content):
-            return "Cannot get xml element for index path \"\(indexPath.string)\". Index is out of bounds for element \(content)."
-        case let .valueNotDictionary(indexPath, content):
-            return "Cannot get xml element for index path \"\(indexPath.string)\". Element is not a dictionary \(content)."
-        case let .valueNotFound(indexPath, content):
-            return "Cannot get xml element for index path \"\(indexPath.string)\". Key is not present in element \(content)."
         }
     }
 }
@@ -61,7 +49,7 @@ public struct XML {
         
         public func attribute(named name: String) throws -> String {
             guard let attribute = attributes[name] else {
-                throw XMLError.valueNotFound(indexPath: [.key(name)], xml: self)
+                throw DecodingError.keyNotFound(name, DecodingError.Context())
             }
             
             return attribute

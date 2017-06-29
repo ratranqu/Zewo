@@ -99,9 +99,9 @@ extension Message {
         return headers["Upgrade"]
     }
     
-    public func content<C : Renderable>(
+    public func content<Content : MediaDecodable>(
         deadline: Deadline = 5.minutes.fromNow()
-    ) throws -> C {
+    ) throws -> Content {
         guard let mediaType = self.contentType else {
             throw MessageError.noContentTypeHeader
         }
@@ -110,7 +110,7 @@ extension Message {
             throw MessageError.noReadableBody
         }
         
-        let coder = try C.coders.coder(for: mediaType)
-        return try coder.decode(from: readable, deadline: deadline)
+        let media = try Content.decodingMedia(for: mediaType)
+        return try media.decode(Content.self, from: readable, deadline: deadline)
     }
 }

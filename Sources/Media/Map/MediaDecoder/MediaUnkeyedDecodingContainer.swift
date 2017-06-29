@@ -1,10 +1,10 @@
-struct MapUnkeyedDecodingContainer<Map : DecodingMap> : UnkeyedDecodingContainer {
-    let decoder: MapDecoder<Map>
-    let map: DecodingMap
+struct MediaUnkeyedDecodingContainer<Map : DecodingMedia> : UnkeyedDecodingContainer {
+    let decoder: MediaDecoder<Map>
+    let map: DecodingMedia
     var codingPath: [CodingKey?]
     var currentIndex: Int
     
-    init(referencing decoder: MapDecoder<Map>, wrapping map: DecodingMap) {
+    init(referencing decoder: MediaDecoder<Map>, wrapping map: DecodingMedia) {
         self.decoder = decoder
         self.map = map
         self.codingPath = decoder.codingPath
@@ -171,7 +171,7 @@ struct MapUnkeyedDecodingContainer<Map : DecodingMap> : UnkeyedDecodingContainer
                 return nil
             }
             
-            let decoded = try decoder.stack.pushing(value) {
+            let decoded = try decoder.stack.pushPop(value) {
                 try T(from: decoder)
             }
             
@@ -189,7 +189,7 @@ struct MapUnkeyedDecodingContainer<Map : DecodingMap> : UnkeyedDecodingContainer
                 message: "Cannot get nested keyed container -- unkeyed container is at end."
             )
             
-            let container = MapKeyedDecodingContainer<NestedKey, Map>(
+            let container = MediaKeyedDecodingContainer<NestedKey, Map>(
                 referencing: decoder,
                 wrapping: try map.keyedContainer(forKey: currentIndex)
             )
@@ -206,7 +206,7 @@ struct MapUnkeyedDecodingContainer<Map : DecodingMap> : UnkeyedDecodingContainer
                 message: "Cannot get nested unkeyed container -- unkeyed container is at end."
             )
             
-            let container = MapUnkeyedDecodingContainer(
+            let container = MediaUnkeyedDecodingContainer(
                 referencing: decoder,
                 wrapping: try map.unkeyedContainer(forKey: currentIndex)
             )
@@ -243,7 +243,7 @@ struct MapUnkeyedDecodingContainer<Map : DecodingMap> : UnkeyedDecodingContainer
             
             currentIndex += 1
             
-            return MapDecoder<Map>(
+            return MediaDecoder<Map>(
                 referencing: value,
                 at: decoder.codingPath,
                 userInfo: decoder.userInfo

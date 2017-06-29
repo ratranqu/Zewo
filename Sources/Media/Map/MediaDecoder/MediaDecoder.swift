@@ -1,26 +1,26 @@
 import Core
 
 extension Decodable {
-    public init<Map : DecodingMap>(
+    public init<Map : DecodingMedia>(
         from map: Map,
         userInfo: [CodingUserInfoKey: Any] = [:]
     ) throws {
-        let decoder = MapDecoder<Map>(referencing: map, userInfo: userInfo)
+        let decoder = MediaDecoder<Map>(referencing: map, userInfo: userInfo)
         try self.init(from: decoder)
     }
 }
 
-class MapDecoder<Map : DecodingMap> : Decoder {
-    var stack: MapStack<DecodingMap>
+class MediaDecoder<Map : DecodingMedia> : Decoder {
+    var stack: Stack<DecodingMedia>
     var codingPath: [CodingKey?]
     var userInfo: [CodingUserInfoKey: Any]
     
     init(
-        referencing map: DecodingMap,
+        referencing map: DecodingMedia,
         at codingPath: [CodingKey?] = [],
         userInfo: [CodingUserInfoKey: Any]
     ) {
-        self.stack = MapStack()
+        self.stack = Stack()
         self.stack.push(map)
         self.codingPath = codingPath
         self.userInfo = userInfo
@@ -34,7 +34,7 @@ class MapDecoder<Map : DecodingMap> : Decoder {
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> {
-        let container = MapKeyedDecodingContainer<Key, Map>(
+        let container = MediaKeyedDecodingContainer<Key, Map>(
             referencing: self,
             wrapping: try stack.top.keyedContainer()
         )
@@ -43,14 +43,14 @@ class MapDecoder<Map : DecodingMap> : Decoder {
     }
     
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        return MapUnkeyedDecodingContainer<Map>(
+        return MediaUnkeyedDecodingContainer<Map>(
             referencing: self,
             wrapping: try stack.top.unkeyedContainer()
         )
     }
     
     func singleValueContainer() throws -> SingleValueDecodingContainer {
-        return MapSingleValueDecodingContainer<Map>(
+        return MediaSingleValueDecodingContainer<Map>(
             referencing: self,
             wrapping: try stack.top.singleValueContainer()
         )

@@ -114,49 +114,49 @@ extension Request {
         contentLength = buffer.bufferSize
     }
     
-    public convenience init<C : Renderable>(
+    public convenience init<Content : MediaEncodable>(
         method: Method,
         uri: String,
         headers: Headers = [:],
-        content: C,
+        content: Content,
         timeout: Duration = 5.minutes
     ) throws {
-        let coder = try C.coders.defaultCoder()
+        let media = try Content.defaultEncodingMedia()
         
         try self.init(
             method: method,
             uri: uri,
             headers: headers,
             body: { writable in
-                try coder.encode(content, to: writable, deadline: timeout.fromNow())
+                try media.encode(content, to: writable, deadline: timeout.fromNow())
             }
         )
         
-        self.contentType = type(of: coder).mediaType
+        self.contentType = media.mediaType
         self.contentLength = nil
         self.transferEncoding = "chunked"
     }
     
-    public convenience init<C : Renderable>(
+    public convenience init<Content : MediaEncodable>(
         method: Method,
         uri: String,
         headers: Headers = [:],
-        content: C,
+        content: Content,
         contentType mediaType: MediaType,
         timeout: Duration = 5.minutes
     ) throws {
-        let coder = try C.coders.coder(for: mediaType)
+        let media = try Content.encodingMedia(for: mediaType)
         
         try self.init(
             method: method,
             uri: uri,
             headers: headers,
             body: { writable in
-                try coder.encode(content, to: writable, deadline: timeout.fromNow())
+                try media.encode(content, to: writable, deadline: timeout.fromNow())
             }
         )
         
-        self.contentType = type(of: coder).mediaType
+        self.contentType = media.mediaType
         self.contentLength = nil
         self.transferEncoding = "chunked"
     }

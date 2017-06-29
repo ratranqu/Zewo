@@ -1,6 +1,33 @@
-import Mapper
+import Core
+import Venice
 
-extension JSON : DecodingMap {
+extension JSON : DecodingMedia {
+    public init(from readable: Readable, deadline: Deadline) throws {
+        let parser = JSONParser()
+        let buffer = UnsafeMutableRawBufferPointer.allocate(count: 4096)
+        
+        defer {
+            buffer.deallocate()
+        }
+        
+        while true {
+            let read = try readable.read(buffer, deadline: deadline)
+            
+            guard !read.isEmpty else {
+                break
+            }
+            
+            guard let json = try parser.parse(read) else {
+                continue
+            }
+            
+            self = json
+            return
+        }
+        
+        self = try parser.finish()
+    }
+    
     public func keyCount() -> Int? {
         if case let .object(object) = self {
             return object.keys.count
@@ -33,7 +60,7 @@ extension JSON : DecodingMap {
         return map != nil
     }
     
-    public func keyedContainer() throws -> DecodingMap {
+    public func keyedContainer() throws -> DecodingMedia {
         guard isObject else {
             throw DecodingError.typeMismatch(type(of: self), DecodingError.Context())
         }
@@ -41,7 +68,7 @@ extension JSON : DecodingMap {
         return self
     }
     
-    public func unkeyedContainer() throws -> DecodingMap {
+    public func unkeyedContainer() throws -> DecodingMedia {
         guard isArray else {
             throw DecodingError.typeMismatch(type(of: self), DecodingError.Context())
         }
@@ -49,7 +76,7 @@ extension JSON : DecodingMap {
         return self
     }
     
-    public func singleValueContainer() throws -> DecodingMap {
+    public func singleValueContainer() throws -> DecodingMedia {
         if isObject {
             throw DecodingError.typeMismatch(type(of: self), DecodingError.Context())
         }
@@ -62,9 +89,9 @@ extension JSON : DecodingMap {
     }
     
     public func decodeIfPresent(
-        _ type: DecodingMap.Type,
+        _ type: DecodingMedia.Type,
         forKey key: CodingKey
-    ) throws -> DecodingMap? {
+    ) throws -> DecodingMedia? {
         if let index = key.intValue {
             guard case let .array(array) = self else {
                 throw DecodingError.typeMismatch(

@@ -1,4 +1,4 @@
-struct MapStack<T> {
+struct Stack<T> {
     private(set) var stack: [T] = []
     
     init() {}
