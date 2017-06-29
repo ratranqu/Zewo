@@ -2,7 +2,7 @@ import XCTest
 import Media
 import HTTP
 
-struct Resources : Content {
+struct Resources : MediaCodable {
     let currentUserURL: String
     let currentUserAuthorizationsHTMLURL: String
     let authorizationsURL: String
