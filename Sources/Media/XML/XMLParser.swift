@@ -85,10 +85,10 @@ fileprivate class ParserStream : InputStream {
     }
 }
 
-public class XMLParser : NSObject, XMLParserDelegate {
+class XMLParser : NSObject, XMLParserDelegate {
     var stack = ElementStack()
     
-    public static func parse(
+    static func parse(
         _ readable: Readable,
         bufferSize: Int = 4096,
         deadline: Deadline
@@ -109,7 +109,7 @@ public class XMLParser : NSObject, XMLParserDelegate {
         return XML(root: root)
     }
     
-    public func parser(
+    func parser(
         _ parser: Foundation.XMLParser,
         didStartElement name: String,
         namespaceURI: String?,
@@ -125,11 +125,11 @@ public class XMLParser : NSObject, XMLParserDelegate {
         stack.push(element)
     }
     
-    public func parser(_ parser: Foundation.XMLParser, foundCharacters content: String) {
+    func parser(_ parser: Foundation.XMLParser, foundCharacters content: String) {
         stack.addContent(content)
     }
     
-    public func parser(
+    func parser(
         _ parser: Foundation.XMLParser,
         didEndElement elementName: String,
         namespaceURI: String?,

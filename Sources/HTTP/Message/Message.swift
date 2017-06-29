@@ -113,4 +113,14 @@ extension Message {
         let media = try Content.decodingMedia(for: mediaType)
         return try media.decode(Content.self, from: readable, deadline: deadline)
     }
+    
+    public func content<Content : DecodingMedia>(
+        deadline: Deadline = 5.minutes.fromNow()
+    ) throws -> Content {
+        guard let readable = try? body.convertedToReadable() else {
+            throw MessageError.noReadableBody
+        }
+        
+        return try Content(from: readable, deadline: deadline)
+    }
 }

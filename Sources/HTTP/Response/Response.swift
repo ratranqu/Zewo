@@ -153,6 +153,25 @@ extension Response {
         contentLength = buffer.bufferSize
     }
     
+    public convenience init<Content : EncodingMedia>(
+        status: Status,
+        headers: Headers = [:],
+        content: Content,
+        timeout: Duration = 5.minutes
+    ) throws {
+        self.init(
+            status: status,
+            headers: headers,
+            body: { writable in
+                try content.encode(to: writable, deadline: timeout.fromNow())
+            }
+        )
+        
+        self.contentType = Content.mediaType
+        self.contentLength = nil
+        self.transferEncoding = "chunked"
+    }
+    
     public convenience init<Content : MediaEncodable>(
         status: Status,
         headers: Headers = [:],
@@ -165,11 +184,7 @@ extension Response {
             status: status,
             headers: headers,
             body: { writable in
-                try media.encode(
-                    content,
-                    to: writable,
-                    deadline: timeout.fromNow()
-                )
+                try media.encode(content, to: writable, deadline: timeout.fromNow())
             }
         )
         
@@ -191,11 +206,7 @@ extension Response {
             status: status,
             headers: headers,
             body: { writable in
-                try media.encode(
-                    content,
-                    to: writable,
-                    deadline: timeout.fromNow()
-                )
+                try media.encode(content, to: writable, deadline: timeout.fromNow())
             }
         )
         

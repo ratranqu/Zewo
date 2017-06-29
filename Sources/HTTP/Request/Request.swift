@@ -114,6 +114,27 @@ extension Request {
         contentLength = buffer.bufferSize
     }
     
+    public convenience init<Content : EncodingMedia>(
+        method: Method,
+        uri: String,
+        headers: Headers = [:],
+        content: Content,
+        timeout: Duration = 5.minutes
+    ) throws {
+        try self.init(
+            method: method,
+            uri: uri,
+            headers: headers,
+            body: { writable in
+                try content.encode(to: writable, deadline: timeout.fromNow())
+            }
+        )
+        
+        self.contentType = Content.mediaType
+        self.contentLength = nil
+        self.transferEncoding = "chunked"
+    }
+    
     public convenience init<Content : MediaEncodable>(
         method: Method,
         uri: String,

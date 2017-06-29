@@ -1,19 +1,3 @@
-public enum XMLError : Error {
-    case noContent(type: Any.Type)
-    case cannotInitialize(type: Any.Type, xml: XML.Element)
-}
-
-extension XMLError : CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case let .noContent(type):
-            return "Cannot initialize type \"\(String(describing: type))\" with no content."
-        case let .cannotInitialize(type, xml):
-            return "Cannot initialize type \"\(String(describing: type))\" with xml \(xml)."
-        }
-    }
-}
-
 public protocol XMLNode {
     var xmlNode: XML.Node { get }
 }
@@ -98,7 +82,7 @@ public struct XML {
         }
     }
     
-    public var root: Element
+    public let root: Element
     
     public init(root: Element) {
         self.root = root

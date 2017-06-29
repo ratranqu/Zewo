@@ -95,7 +95,7 @@ public protocol DecodingMedia {
 
 extension DecodingMedia {
     public func keyedContainer(forKey key: CodingKey) throws -> DecodingMedia {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.keyNotFound(key, DecodingError.Context())
         }
         
@@ -103,7 +103,7 @@ extension DecodingMedia {
     }
     
     public func unkeyedContainer(forKey key: CodingKey) throws -> DecodingMedia {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.keyNotFound(key, DecodingError.Context())
         }
         
@@ -111,7 +111,7 @@ extension DecodingMedia {
     }
     
     public func decode<D : Decodable>(_ type: D.Type, forKey key: CodingKey) throws -> D {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) as? Self else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) as? Self else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -119,7 +119,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Bool.Type, forKey key: CodingKey) throws -> Bool {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -127,7 +127,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Int.Type, forKey key: CodingKey) throws -> Int {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -135,7 +135,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Int8.Type, forKey key: CodingKey) throws -> Int8 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -143,7 +143,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Int16.Type, forKey key: CodingKey) throws -> Int16 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -151,7 +151,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Int32.Type, forKey key: CodingKey) throws -> Int32 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -159,7 +159,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Int64.Type, forKey key: CodingKey) throws -> Int64 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -167,7 +167,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: UInt.Type, forKey key: CodingKey) throws -> UInt {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -175,7 +175,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: UInt8.Type, forKey key: CodingKey) throws -> UInt8 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -183,7 +183,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: UInt16.Type, forKey key: CodingKey) throws -> UInt16 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -191,7 +191,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: UInt32.Type, forKey key: CodingKey) throws -> UInt32 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -199,7 +199,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: UInt64.Type, forKey key: CodingKey) throws -> UInt64 {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -207,7 +207,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Float.Type, forKey key: CodingKey) throws -> Float {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -215,7 +215,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: Double.Type, forKey key: CodingKey) throws -> Double {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -223,7 +223,7 @@ extension DecodingMedia {
     }
     
     public func decode(_ type: String.Type, forKey key: CodingKey) throws -> String {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             throw DecodingError.valueNotFound(type, DecodingError.Context())
         }
         
@@ -231,7 +231,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Bool.Type, forKey key: CodingKey) throws -> Bool? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -239,7 +239,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Int.Type, forKey key: CodingKey) throws -> Int? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -247,7 +247,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Int8.Type, forKey key: CodingKey) throws -> Int8? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -255,7 +255,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Int16.Type, forKey key: CodingKey) throws -> Int16? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -263,7 +263,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Int32.Type, forKey key: CodingKey) throws -> Int32? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -271,7 +271,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Int64.Type, forKey key: CodingKey) throws -> Int64? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -279,7 +279,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: UInt.Type, forKey key: CodingKey) throws -> UInt? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -287,7 +287,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: UInt8.Type, forKey key: CodingKey) throws -> UInt8? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -295,7 +295,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: UInt16.Type, forKey key: CodingKey) throws -> UInt16? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -303,7 +303,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: UInt32.Type, forKey key: CodingKey) throws -> UInt32? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -311,7 +311,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: UInt64.Type, forKey key: CodingKey) throws -> UInt64? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -319,7 +319,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Float.Type, forKey key: CodingKey) throws -> Float? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -327,7 +327,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: Double.Type, forKey key: CodingKey) throws -> Double? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         
@@ -335,7 +335,7 @@ extension DecodingMedia {
     }
     
     public func decodeIfPresent(_ type: String.Type, forKey key: CodingKey) throws -> String? {
-        guard let map = try decodeIfPresent(type(of: self), forKey: key) else {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) else {
             return nil
         }
         

@@ -1,22 +1,5 @@
 import Foundation
 
-public enum JSONError : Error {
-    case noContent(type: Any.Type)
-    case cannotInitialize(type: Any.Type, json: JSON)
-}
-
-extension JSONError : CustomStringConvertible {
-    /// :nodoc:
-    public var description: String {
-        switch self {
-        case let .noContent(type):
-            return "Cannot initialize type \"\(String(describing: type))\" with no content."
-        case let .cannotInitialize(type, json):
-            return "Cannot initialize type \"\(String(describing: type))\" with json \(json)."
-        }
-    }
-}
-
 public enum JSON {
     case null
     case bool(Bool)
@@ -28,58 +11,7 @@ public enum JSON {
 }
 
 extension JSON {
-    /// :nodoc:
-    public init<T: JSONRepresentable>(_ value: T?) {
-        self = value?.json() ?? .null
-    }
-    
-    /// :nodoc:
-    public init<T: JSONRepresentable>(_ values: [T]?) {
-        if let values = values {
-            self = .array(values.map({ $0.json() }))
-        } else {
-            self = .null
-        }
-    }
-    
-    /// :nodoc:
-    public init<T: JSONRepresentable>(_ values: [T?]?) {
-        if let values = values {
-            self = .array(values.map({ $0?.json() ?? .null}))
-        } else {
-            self = .null
-        }
-    }
-    
-    /// :nodoc:
-    public init<T: JSONRepresentable>(_ values: [String: T]?) {
-        if let values = values {
-            var dictionary: [String: JSON] = [:]
-            
-            for (key, value) in values.map({($0.key, $0.value.json() )}) {
-                dictionary[key] = value
-            }
-            
-            self = .object(dictionary)
-        } else {
-            self = .null
-        }
-    }
-    
-    /// :nodoc:
-    public init<T: JSONRepresentable>(_ values: [String: T?]?) {
-        if let values = values {
-            var dictionary: [String: JSON] = [:]
-            
-            for (key, value) in values.map({($0.key, $0.value?.json() ?? .null)}) {
-                dictionary[key] = value
-            }
-            
-            self = .object(dictionary)
-        } else {
-            self = .null
-        }
-    }
+    public static var mediaType: MediaType = .json
 }
 
 extension JSON {
@@ -141,50 +73,6 @@ extension JSON {
         }
         
         return false
-    }
-}
-
-extension JSON {
-    public func get<T : JSONInitializable>(_ indexPath: CodingKey...) throws -> T {
-        let content = try _get(indexPath as [CodingKey])
-        return try T(json: content)
-    }
-    
-    public func get(_ indexPath: CodingKey...) throws -> JSON {
-        return try _get(indexPath as [CodingKey])
-    }
-    
-    private func _get(_ indexPath: [CodingKey]) throws -> JSON {
-        var value = self
-        var visited: [CodingKey] = []
-        
-        for component in indexPath {
-            visited.append(component)
-            
-            if let index = component.intValue {
-                guard case let .array(array) = value else {
-                    throw DecodingError.typeMismatch(JSON.self, DecodingError.Context())
-                }
-                
-                guard array.indices.contains(index) else {
-                    throw DecodingError.keyNotFound(component, DecodingError.Context())
-                }
-                
-                value = array[index]
-            } else {
-                guard case let .object(dictionary) = value else {
-                    throw DecodingError.valueNotFound(JSON.self, DecodingError.Context())
-                }
-                
-                guard let newValue = dictionary[component.stringValue] else {
-                    throw DecodingError.keyNotFound(component, DecodingError.Context())
-                }
-                
-                value = newValue
-            }
-        }
-        
-        return value
     }
 }
 
@@ -252,7 +140,7 @@ extension JSON : ExpressibleByStringLiteral {
 extension JSON : ExpressibleByArrayLiteral {
     /// :nodoc:
     public init(arrayLiteral elements: JSON...) {
-        self = .array(elements.map({ $0.json() }))
+        self = .array(elements)
     }
 }
 
@@ -262,7 +150,7 @@ extension JSON : ExpressibleByDictionaryLiteral {
         var dictionary = [String: JSON](minimumCapacity: elements.count)
         
         for (key, value) in elements {
-            dictionary[key] = value.json()
+            dictionary[key] = value
         }
         
         self = .object(dictionary)
