@@ -2,12 +2,12 @@ import Core
 
 class MediaDecoder<Map : DecodingMedia> : Decoder {
     var stack: Stack<DecodingMedia>
-    var codingPath: [CodingKey?]
+    var codingPath: [CodingKey]
     var userInfo: [CodingUserInfoKey: Any]
     
     init(
         referencing map: DecodingMedia,
-        at codingPath: [CodingKey?] = [],
+        at codingPath: [CodingKey] = [],
         userInfo: [CodingUserInfoKey: Any]
     ) {
         self.stack = Stack()
@@ -17,9 +17,12 @@ class MediaDecoder<Map : DecodingMedia> : Decoder {
     }
     
     func with<T>(pushedKey: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        codingPath.append(pushedKey)
+        if let k = pushedKey {
+            codingPath.append(k)
+            defer { codingPath.removeLast() }
+        }
+
         let result: T = try work()
-        codingPath.removeLast()
         return result
     }
     

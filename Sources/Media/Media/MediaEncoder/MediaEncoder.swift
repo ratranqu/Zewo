@@ -1,20 +1,23 @@
 import Core
 
 class MediaEncoder<Map : EncodingMedia> : Encoder {
+    
     var stack: Stack<EncodingMedia>
-    var codingPath: [CodingKey?]
+    var codingPath: [CodingKey]
     var userInfo: [CodingUserInfoKey: Any]
     
-    init(codingPath: [CodingKey?] = [], userInfo: [CodingUserInfoKey: Any]) {
+    init(codingPath: [CodingKey] = [], userInfo: [CodingUserInfoKey: Any]) {
         self.stack = Stack()
         self.codingPath = codingPath
         self.userInfo = userInfo
     }
     
     func with<T>(pushedKey key: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        codingPath.append(key)
+        if let k = key {
+            codingPath.append(k)
+            defer { codingPath.removeLast() }
+        }
         let result: T = try work()
-        codingPath.removeLast()
         return result
     }
     

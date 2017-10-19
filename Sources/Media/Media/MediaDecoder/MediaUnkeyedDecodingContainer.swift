@@ -1,7 +1,8 @@
 struct MediaUnkeyedDecodingContainer<Map : DecodingMedia> : UnkeyedDecodingContainer {
+    
     let decoder: MediaDecoder<Map>
     let map: DecodingMedia
-    var codingPath: [CodingKey?]
+    var codingPath: [CodingKey]
     var currentIndex: Int
     
     init(referencing decoder: MediaDecoder<Map>, wrapping map: DecodingMedia) {
@@ -21,6 +22,170 @@ struct MediaUnkeyedDecodingContainer<Map : DecodingMedia> : UnkeyedDecodingConta
         }
         
         return currentIndex >= count
+    }
+    
+    func throwIfAtEnd() throws {
+        // TODO: throw a relevant error
+    }
+    
+    mutating func decodeNil() throws -> Bool {
+        try throwIfAtEnd()
+        
+        return decoder.with(pushedKey: nil) {
+            let decoded = map.decodeNil()
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Bool.Type) throws -> Bool {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Int.Type) throws -> Int {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Int8.Type) throws -> Int8 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Int16.Type) throws -> Int16 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Int32.Type) throws -> Int32 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Int64.Type) throws -> Int64 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: UInt.Type) throws -> UInt {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: UInt8.Type) throws -> UInt8 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: UInt16.Type) throws -> UInt16 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: UInt32.Type) throws -> UInt32 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: UInt64.Type) throws -> UInt64 {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Float.Type) throws -> Float {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: Double.Type) throws -> Double {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode(_ type: String.Type) throws -> String {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
+    }
+    
+    mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+        try throwIfAtEnd()
+        
+        return try decoder.with(pushedKey: nil) {
+            let decoded = try map.decode(type, forKey: currentIndex)
+            currentIndex += 1
+            return decoded
+        }
     }
     
     mutating func decodeIfPresent(_ type: Bool.Type) throws -> Bool? {
@@ -171,9 +336,9 @@ struct MediaUnkeyedDecodingContainer<Map : DecodingMedia> : UnkeyedDecodingConta
                 return nil
             }
             
-            let decoded = try decoder.stack.pushPop(value) {
-                try T(from: decoder)
-            }
+            decoder.stack.push(value)
+            let decoded: T = try T(from: decoder)
+            decoder.stack.pop()
             
             currentIndex += 1
             return decoded

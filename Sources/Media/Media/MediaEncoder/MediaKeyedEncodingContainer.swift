@@ -1,18 +1,29 @@
 final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : KeyedEncodingContainerProtocol {
+    
     typealias Key = K
     let encoder: MediaEncoder<Map>
-    var codingPath: [CodingKey?]
+    var codingPath: [CodingKey]
     
-    init(referencing encoder: MediaEncoder<Map>, codingPath: [CodingKey?]) {
+    init(referencing encoder: MediaEncoder<Map>, codingPath: [CodingKey]) {
         self.encoder = encoder
         self.codingPath = codingPath
     }
     
     func with<T>(pushedKey key: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        codingPath.append(key)
+        if let k = key {
+            codingPath.append(k)
+            defer { codingPath.removeLast() }
+        }
         let result: T = try work()
-        codingPath.removeLast()
+
         return result
+    }
+    
+    
+    func encodeNil(forKey key: K) throws {
+        try encoder.with(pushedKey: key) {
+            try encoder.stack.push(Map.encodeNil())
+        }
     }
     
     func encode(_ value: Bool, forKey key: Key) throws {

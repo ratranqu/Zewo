@@ -1,17 +1,30 @@
 final class MediaUnkeyedEncodingContainer<Map : EncodingMedia> : UnkeyedEncodingContainer {
-    let encoder: MediaEncoder<Map>
-    var codingPath: [CodingKey?]
+
+    var count: Int // TODO: properly update the property
     
-    init(referencing encoder: MediaEncoder<Map>, codingPath: [CodingKey?]) {
+    let encoder: MediaEncoder<Map>
+    var codingPath: [CodingKey]
+    
+    init(referencing encoder: MediaEncoder<Map>, codingPath: [CodingKey]) {
         self.encoder = encoder
         self.codingPath = codingPath
+        self.count = 0
     }
     
     func with<T>(pushedKey key: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        codingPath.append(key)
+        if let k = key {
+            codingPath.append(k)
+            defer { codingPath.removeLast() }
+        }
         let result: T = try work()
-        codingPath.removeLast()
+
         return result
+    }
+    
+    func encodeNil() throws {
+        try encoder.with(pushedKey: nil) {
+            try encoder.stack.push(Map.encodeNil())
+        }
     }
     
     func encode(_ value: Bool) throws {
