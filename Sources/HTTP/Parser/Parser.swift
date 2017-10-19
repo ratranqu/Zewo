@@ -98,7 +98,8 @@ internal class Parser {
     private var state: State = .ready
     private var context = Context()
     private var bytes: [UInt8] = []
-    
+    private var reasonPhrase: String = ""
+
     public init(stream: Readable, bufferSize: Int = 2048, type: http_parser_type) {
         self.stream = stream
         self.bufferSize = bufferSize
@@ -161,6 +162,13 @@ internal class Parser {
                 buffer.baseAddress?.assumingMemoryBound(to: Int8.self),
                 buffer.count
             )
+            
+            context.status = Response.Status(
+                statusCode: Int(parser.status_code),
+                reasonPhrase: self.reasonPhrase
+            )
+            
+            
         }
         
         guard processedCount == buffer.count else {
@@ -192,10 +200,8 @@ internal class Parser {
                     return String(cString: pointer.baseAddress!)
                 }
                 
-                context.status = Response.Status(
-                    statusCode: Int(parser.status_code),
-                    reasonPhrase: string
-                )
+                self.reasonPhrase = string
+
             case .headerField:
                 bytes.append(0)
                 

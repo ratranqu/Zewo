@@ -26,11 +26,4 @@ struct Stack<T> {
         precondition(stack.count > 0, "Empty map stack.")
         return stack.popLast()!
     }
-    
-    mutating func pushPop<R>(_ value: T, body: () throws -> R) rethrows -> R {
-        push(value)
-        let result: R = try body()
-        pop()
-        return result
-    }
 }

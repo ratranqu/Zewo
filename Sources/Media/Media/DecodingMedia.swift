@@ -5,7 +5,7 @@ extension Decodable {
     public init<Map : DecodingMedia>(
         from map: Map,
         userInfo: [CodingUserInfoKey: Any] = [:]
-    ) throws {
+        ) throws {
         let decoder = MediaDecoder<Map>(referencing: map, userInfo: userInfo)
         try self.init(from: decoder)
     }
@@ -117,6 +117,15 @@ extension DecodingMedia {
         }
         
         return try D(from: map)
+    }
+
+    
+    public func decode<D : DecodingMedia>(_ type: D.Type, forKey key: CodingKey) throws -> D {
+        guard let map = try decodeIfPresent(Self.self, forKey: key) as? D else {
+            throw DecodingError.valueNotFound(type, DecodingError.Context())
+        }
+        
+        return map
     }
     
     public func decode(_ type: Bool.Type, forKey key: CodingKey) throws -> Bool {
