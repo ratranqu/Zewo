@@ -12,13 +12,14 @@ class MediaEncoder<Map : EncodingMedia> : Encoder {
         self.userInfo = userInfo
     }
     
-    func with<T>(pushedKey key: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        if let k = key {
-            codingPath.append(k)
-            defer { codingPath.removeLast() }
-        }
+    func with<T>(pushedKey key: CodingKey, _ work: () throws -> T) rethrows -> T {
+        codingPath.append(key)
+
         let result: T = try work()
-        return result
+
+        codingPath.removeLast()
+
+       return result
     }
     
     var canEncodeNewElement: Bool {

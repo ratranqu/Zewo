@@ -12,12 +12,6 @@ struct Stack<T> {
         return stack.last!
     }
     
-    mutating func withTop(body: (inout T) throws -> Void) rethrows -> Void {
-        var top = self.top
-        try body(&top)
-        stack[stack.count - 1] = top
-    }
-    
     mutating func push(_ value: T) {
         stack.append(value)
     }
