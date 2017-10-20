@@ -16,13 +16,11 @@ class MediaDecoder<Map : DecodingMedia> : Decoder {
         self.userInfo = userInfo
     }
     
-    func with<T>(pushedKey: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        if let k = pushedKey {
-            codingPath.append(k)
-            defer { codingPath.removeLast() }
-        }
+    func with<T>(pushedKey: CodingKey, _ work: () throws -> T) rethrows -> T {
+        codingPath.append(pushedKey)
 
         let result: T = try work()
+        codingPath.removeLast()
         return result
     }
     

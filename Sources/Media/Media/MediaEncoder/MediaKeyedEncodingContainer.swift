@@ -9,13 +9,12 @@ final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : Ke
         self.codingPath = codingPath
     }
     
-    func with<T>(pushedKey key: CodingKey?, _ work: () throws -> T) rethrows -> T {
-        if let k = key {
-            codingPath.append(k)
-            defer { codingPath.removeLast() }
-        }
+    func with<T>(pushedKey key: CodingKey, _ work: () throws -> T) rethrows -> T {
+        codingPath.append(key)
+        
         let result: T = try work()
 
+        codingPath.removeLast()
         return result
     }
     
@@ -28,121 +27,136 @@ final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : Ke
     
     func encode(_ value: Bool, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Int, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Int8, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Int16, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Int32, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Int64, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: UInt, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: UInt8, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: UInt16, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: UInt32, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: UInt64, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Float, forKey key: Key)  throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: Double, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode(_ value: String, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(value, forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
     func encode<T : Encodable>(_ value: T, forKey key: Key) throws {
         try encoder.with(pushedKey: key) {
-            try encoder.stack.withTop { map in
-                try map.encode(encoder.box(value), forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(encoder.box(value), forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         }
     }
     
@@ -151,9 +165,10 @@ final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : Ke
         forKey key: Key
     ) -> KeyedEncodingContainer<NestedKey> {
         do {
-            try encoder.stack.withTop { map in
-                try map.encode(Map.makeKeyedContainer(forKey: key), forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(Map.makeKeyedContainer(forKey: key), forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         } catch {
             fatalError("return a failure container")
         }
@@ -170,9 +185,10 @@ final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : Ke
     
     func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
         do {
-            try encoder.stack.withTop { map in
-                try map.encode(Map.makeUnkeyedContainer(forKey: key), forKey: key)
-            }
+            var top = encoder.stack.top
+            try top.encode(Map.makeUnkeyedContainer(forKey: key), forKey: key)
+            encoder.stack.pop()
+            encoder.stack.push(top)
         } catch {
             fatalError("return a failure container")
         }
@@ -187,17 +203,18 @@ final class MediaKeyedEncodingContainer<Map : EncodingMedia, K : CodingKey> : Ke
     
     func superEncoder() -> Encoder {
         return MediaReferencingEncoder(referencing: encoder, at: MapSuperKey.super) { value in
-            try self.encoder.stack.withTop { map in
-                try map.encode(value, forKey: MapSuperKey.super)
-            }
+            var top = self.encoder.stack.top
+            try top.encode(value, forKey: MapSuperKey.super)
+            self.encoder.stack.pop()
+            self.encoder.stack.push(top)
         }
     }
     
     func superEncoder(forKey key: Key) -> Encoder {
         return MediaReferencingEncoder(referencing: encoder, at: key) { value in
-            try self.encoder.stack.withTop { map in
-                try map.encode(value, forKey: key)
-            }
-        }
+            var top = self.encoder.stack.top
+            try top.encode(value, forKey: key)
+            self.encoder.stack.pop()
+            self.encoder.stack.push(top)        }
     }
 }
