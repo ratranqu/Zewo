@@ -30,6 +30,20 @@ public class JSONTests : XCTestCase {
         XCTAssertEqual("{\"nil\":null,\"intarray\":[1,2,3,5],\"object\":{\"e\":\"f\",\"c\":\"d\"},\"array\":{\"b\":2,\"a\":1},\"int\":1,\"bool\":true,\"string\":\"string\"}", s)
     }
     
+    func testJSONFromVariables() throws {
+        let var0 = "hello"
+        let var1: JSON = JSON(stringLiteral:var0)
+
+        let array: JSON = ["string": var1, "int": 1, "bool": true, "nil": nil, "array":["a": 1, "b": 2], "object": ["c": "d", "e": "f"], "intarray": [1, 2, 3, 5]]
+        
+        var s: String?
+        try JSONSerializer().serialize(array) { (buf) in
+            s = String(buf)
+        }
+        
+        XCTAssertEqual("{\"nil\":null,\"intarray\":[1,2,3,5],\"object\":{\"e\":\"f\",\"c\":\"d\"},\"array\":{\"b\":2,\"a\":1},\"int\":1,\"bool\":true,\"string\":\"hello\"}", s)
+    }
+    
     func testParseFromString() throws {
         let str = "{\"nil\":null,\"intarray\":[1,2,3,5],\"object\":{\"e\":\"f\",\"c\":\"d\"},\"array\":{\"b\":2,\"a\":1},\"int\":1,\"bool\":true,\"string\":\"string\"}"
         
