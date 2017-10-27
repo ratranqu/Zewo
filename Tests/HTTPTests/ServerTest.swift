@@ -5,7 +5,6 @@ import Venice
 import Zewo
 
 class ServerTest: XCTestCase {
-
     func testServer() throws {
         let message = "Hello"
         let method: Request.Method = .get
@@ -35,6 +34,8 @@ class ServerTest: XCTestCase {
         XCTAssertEqual(String(buffer), message)
 
         coroutine.cancel()
-       
+        
+        try Coroutine.wakeUp(10.seconds.fromNow())
+
     }
 }
