@@ -46,7 +46,7 @@ public class TCPTests: XCTestCase {
     }
 
     func testClientServer() throws {
-        let deadline = 1.minute.fromNow()
+        let deadline = 10.minute.fromNow()
         let port = 8004
         let channel = try Channel<Void>()
         let buffer = UnsafeMutableRawBufferPointer.allocate(count: 10)
